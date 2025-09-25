@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会议营销活动 (Event Campaign) </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Helvetica Neue', 'Arial', 'sans-serif';
+            background-color: #f8fafc; /* gray-50 */
+            color: #1f2937; /* gray-800 */
+            scroll-behavior: smooth;
+        }
+        .section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 8rem 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        h1, h2, h3 {
+            font-weight: 800;
+        }
+        .brand-orange {
+            color: #F97316;
+        }
+        .bg-brand-orange {
+            background-color: #F97316;
+        }
+        .border-brand-orange {
+            border-color: #F97316;
+        }
+
+        /* Side Navigation */
+        .side-nav {
+            position: fixed;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
+            z-index: 50;
+        }
+        .side-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .side-nav li a {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0.5rem 0;
+            text-decoration: none;
+            color: #6b7280; /* gray-500 */
+            transition: all 0.3s ease;
+        }
+        .side-nav li a .nav-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #d1d5db; /* gray-300 */
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .side-nav li a .nav-label {
+            visibility: hidden;
+            opacity: 0;
+            font-size: 0.875rem;
+            margin-right: 1rem;
+            transform: translateX(10px);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .side-nav li a:hover .nav-dot,
+        .side-nav li a.active .nav-dot {
+            background-color: #F97316;
+            transform: scale(1.5);
+        }
+        .side-nav li a:hover .nav-label,
+        .side-nav li a.active .nav-label {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(0);
+            color: #1f2937;
+        }
+
+        /* Flow Chart Styling */
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        .flow-arrow {
+            display: none;
+        }
+        @media (min-width: 768px) {
+            .flow-arrow {
+                display: block;
+                color: #d1d5db;
+                align-self: center;
+                margin: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <!-- Side Navigation -->
+    <nav class="side-nav">
+        <ul>
+            <li><a href="#slide1" class="nav-link"><span class="nav-label">封面</span><span class="nav-dot"></span></a></li>
+            <li><a href="#slide2" class="nav-link"><span class="nav-label">功能价值</span><span class="nav-dot"></span></a></li>
+            <li><a href="#slide3" class="nav-link"><span class="nav-label">当前焦点</span><span class="nav-dot"></span></a></li>
+            <li><a href="#slide4" class="nav-link"><span class="nav-label">核心流程</span><span class="nav-dot"></span></a></li>
+            <li><a href="#slide5" class="nav-link"><span class="nav-label">功能深潜</span><span class="nav-dot"></span></a></li>
+            <li><a href="#slide6" class="nav-link"><span class="nav-label">未来蓝图</span><span class="nav-dot"></span></a></li>
+            <li><a href="#slide7" class="nav-link"><span class="nav-label">行动计划</span><span class="nav-dot"></span></a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- Slide 1: Cover Page -->
+        <section id="slide1" class="section bg-gray-900 text-white text-center">
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-4 text-sm font-medium tracking-widest text-orange-400 uppercase">Event Campaign</div>
+                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight">
+                    会议营销活动管理
+                </h1>
+                <p class="mt-6 text-xl md:text-2xl text-gray-300">
+                    一期：聚焦小型学术会议的设计与实施框架
+                </p>
+            </div>
+        </section>
+
+        <!-- Slide 2: Strategic Value -->
+        <section id="slide2" class="section">
+            <div class="container mx-auto max-w-5xl text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">战略价值</h2>
+                <p class="text-xl text-gray-600 mb-16">Event Campaign：驱动合规、高效、可衡量的学术互动</p>
+                <div class="grid md:grid-cols-3 gap-12">
+                    <div class="text-center p-6 bg-white rounded-xl shadow-sm">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 text-orange-500 mx-auto mb-6">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3">效率提升</h3>
+                        <p class="text-gray-600">将标准化流程自动化，解放人力，赋能一线，降低沟通与管理成本。</p>
+                    </div>
+                    <div class="text-center p-6 bg-white rounded-xl shadow-sm">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 text-orange-500 mx-auto mb-6">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3">效果衡量</h3>
+                        <p class="text-gray-600">实现全链路数据追踪，实时了解营销进展和效果，及时纠偏，精准评估会议 ROI。</p>
+                    </div>
+                    <div class="text-center p-6 bg-white rounded-xl shadow-sm">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 text-orange-500 mx-auto mb-6">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3">策略性管控</h3>
+                        <p class="text-gray-600">将独立的营销活动串联为一体化的 Campaign，确保整体策略、预算和执行过程的合规性与一致性</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Strategic Focus -->
+        <section id="slide3" class="section bg-white">
+            <div class="container mx-auto max-w-5xl text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">当前焦点</h2>
+                <p class="text-xl text-gray-600 mb-16">为何先围绕小型会议：确保场景聚焦和加速交付</p>
+                 <div class="grid md:grid-cols-2 gap-8 text-left">
+                    <div class="p-6 border-l-4 border-brand-orange bg-orange-50 rounded-r-lg">
+                        <h3 class="text-xl font-bold mb-2">场景聚焦，需求明确</h3>
+                        <p class="text-gray-700">小型会议流程标准化，需求收敛，可打造坚实的核心功能基础。</p>
+                    </div>
+                    <div class="p-6 border-l-4 border-brand-orange bg-orange-50 rounded-r-lg">
+                        <h3 class="text-xl font-bold mb-2">降低复杂度，规避风险</h3>
+                        <p class="text-gray-700">避免大型会议复杂线下环节与多系统集成，降低初期技术与项目风险。</p>
+                    </div>
+                    <div class="p-6 border-l-4 border-brand-orange bg-orange-50 rounded-r-lg">
+                        <h3 class="text-xl font-bold mb-2">加速价值交付</h3>
+                        <p class="text-gray-700">明确的需求范围匹配当前资源，确保 12 月 Go Live，让业务尽早受益。</p>
+                    </div>
+                    <div class="p-6 border-l-4 border-brand-orange bg-orange-50 rounded-r-lg">
+                        <h3 class="text-xl font-bold mb-2">迭代演进，稳健扩展</h3>
+                        <p class="text-gray-700">核心功能可覆盖部分大会需求，后续逐步升级扩展以满足市场部大会。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Core Process -->
+        <section id="slide4" class="section">
+            <div class="container mx-auto max-w-6xl text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">核心流程</h2>
+                <p class="text-xl text-gray-600 mb-16">从策略制定到闭环追踪的一体化协同</p>
+                <div class="flex flex-col md:flex-row justify-center items-center gap-8 w-full">
+                    <!-- Step 1: Strategy -->
+                    <div class="flow-step">
+                        <div class="p-4 bg-white rounded-full shadow-md mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg></div>
+                        <h4 class="font-bold">策略设定</h4>
+                        <p class="text-sm text-gray-500">市场部圈定目标医生，设计自动化客户旅程</p>
+                    </div>
+                    <div class="flow-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></div>
+                    <!-- Step 2: Distribution -->
+                    <div class="flow-step">
+                        <div class="p-4 bg-white rounded-full shadow-md mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></div>
+                        <h4 class="font-bold">任务分发</h4>
+                        <p class="text-sm text-gray-500">系统根据预设规则，将任务与内容精准下发至代表</p>
+                    </div>
+                     <div class="flow-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></div>
+                    <!-- Step 3: Execution -->
+                    <div class="flow-step">
+                        <div class="p-4 bg-white rounded-full shadow-md mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+                        <h4 class="font-bold">一线执行</h4>
+                        <p class="text-sm text-gray-500">代表接收清晰指令，高效完成会议邀请、跟进等动作</p>
+                    </div>
+                     <div class="flow-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2v6h6M21.5 22v-6h-6"/><path d="M22 11.5A10 10 0 0 0 3.5 12.5"/><path d="M2 12.5a10 10 0 0 0 18.5-1"/></svg></div>
+                    <!-- Step 4: Tracking -->
+                    <div class="flow-step">
+                         <div class="p-4 bg-white rounded-full shadow-md mb-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20V16"/></svg></div>
+                        <h4 class="font-bold">闭环追踪</h4>
+                        <p class="text-sm text-gray-500">数据实时回流，市场部全盘监控活动进展与成效</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 5: Functional Deep Dive -->
+        <section id="slide5" class="section bg-white">
+            <div class="container mx-auto max-w-6xl text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-16">功能详述</h2>
+                <div class="grid lg:grid-cols-2 gap-12 text-left">
+                    <div class="p-8 rounded-lg bg-gray-50">
+                        <h3 class="text-3xl font-bold mb-6">市场部策略设置及任务分配</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">目标医生精准定向:</strong> 支持多维度标签组合，精准筛选目标医生群体。</span></li>
+                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">学术内容策略配置:</strong> 关联活动所需资料，确保内容合规统一。</span></li>
+                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">自动化客户旅程设计:</strong> 配置基于时间节点的自动化规则，如会前提醒、会后问卷推送。</span></li>
+                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">全景式活动追踪:</strong> 可视化数据看板，实时监控任务完成率、医生覆盖率等核心指标。</span></li>
+                        </ul>
+                    </div>
+                    <div class="p-8 rounded-lg bg-gray-50">
+                        <h3 class="text-3xl font-bold mb-6">销售代表的高效执行工具</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">任务式驱动:</strong> 系统在恰当时间自动推送清晰任务指令，无需记忆SOP。</span></li>
+                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">策略性任务触发:</strong> 根据预设条件智能触发关键跟进，将精力聚焦于高价值互动，确保关键节点不遗漏。</span></li>
+                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">策略对齐与校准:</strong> 强化任务源于统一 Campaign 策略，通过系统性指引确保执行与目标同频，减少沟通偏差。</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 6: Future Blueprint -->
+        <section id="slide6" class="section">
+            <div class="container mx-auto max-w-5xl text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">未来蓝图</h2>
+                <p class="text-xl text-gray-600 mb-16">在坚实的一期基础之上，我们将持续深化与扩展</p>
+                <div class="grid md:grid-cols-3 gap-12">
+                    <div class="text-center p-6 bg-white rounded-xl shadow-sm">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 text-orange-500 mx-auto mb-6">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3">更灵活的自动化引擎</h3>
+                        <p class="text-gray-600">支持各环节配置多样化互动任务，及基于不同会议类型的差异化模板。</p>
+                    </div>
+                    <div class="text-center p-6 bg-white rounded-xl shadow-sm">
+                         <div class="flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 text-orange-500 mx-auto mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3">更聚合的任务执行</h3>
+                        <p class="text-gray-600">在统一的任务中心一站式处理所有相关任务，大幅提升执行效率。</p>
+                    </div>
+                    <div class="text-center p-6 bg-white rounded-xl shadow-sm">
+                        <div class="flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 text-orange-500 mx-auto mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 1-3.5 3.5c-2 2-5 2-7 0s-2-5 0-7L5 1"/><path d="m12 23 3.5-3.5c2-2 5-2 7 0s2 5 0 7L19 23"/><path d="M12 12 5.1 5.1"/><path d="M12 12 18.9 18.9"/><path d="M12 12 5.1 18.9"/><path d="M12 12 18.9 5.1"/></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3">更智能的数据决策</h3>
+                        <p class="text-gray-600">引入AI模型提供深度洞察，如预测会议吸引力、推荐最优互动时机。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 7: Action Plan -->
+        <section id="slide7" class="section bg-gray-900 text-white">
+            <div class="container mx-auto max-w-4xl text-center">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">行动计划</h2>
+                <p class="text-xl text-gray-300 mb-12">目标：确保方案精准满足业务需求</p>
+                <div class="bg-gray-800 p-10 rounded-xl text-left max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-bold text-orange-400 mb-2">核心行动</h3>
+                    <p class="text-lg text-gray-200 mb-6">国庆假期后，准备一份高保真、可交互的产品原型。</p>
+                    <h3 class="text-2xl font-bold text-orange-400 mb-2">关键会议</h3>
+                    <p class="text-lg text-gray-200 mb-6">与核心业务团队组织一轮深度的原型评审与讨论会。</p>
+                    <h3 class="text-2xl font-bold text-orange-400 mb-2">预期产出</h3>
+                    <p class="text-lg text-gray-200">收集真实用户反馈，共同验证并优化方案，确保产品真实可用、好用。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.5 
+            };
+
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        
+                        // Update active nav link
+                        navLinks.forEach(link => {
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            } else {
+                                link.classList.remove('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                sectionObserver.observe(section);
+            });
+            
+            // Set initial active link for the first section
+            if (sections.length > 0) {
+                 const firstNavLink = document.querySelector(`.nav-link[href="#${sections[0].id}"]`);
+                 if(firstNavLink) firstNavLink.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
+
