@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>营销活动原型 DEMO</title>
+    <style>
+        /* --- 全局与重置样式 --- */
+        :root {
+            --primary-color: #f58220;
+            --primary-hover-color: #e8771a;
+            --border-color: #e8e8e8;
+            --background-color: #f7f7f7;
+            --text-color: #333;
+            --text-secondary-color: #888;
+            --text-light-color: #aaa;
+            --table-header-bg: #fafafa;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --border-radius: 4px;
+            --blue-color: #3b82f6;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-size: 14px;
+        }
+        
+        /* --- 辅助类 --- */
+        .hidden { display: none !important; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+        /* --- 按钮样式 --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: #fff;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover-color);
+            border-color: var(--primary-hover-color);
+            color: #fff;
+        }
+
+        /* --- 模态框 (Modal) 样式 --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--modal-overlay-bg);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            overflow-y: auto;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background-color: #fff; border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: scale(0.95); transition: transform 0.3s;
+            margin: 24px;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-content-sm { width: 520px; }
+        .modal-content-lg { width: 900px; }
+        .modal-header { padding: 16px 24px; border-bottom: 1px solid var(--border-color); }
+        .modal-header h2 { margin: 0; font-size: 18px; font-weight: 500; }
+        .modal-body { padding: 24px; }
+        .modal-footer { padding: 16px 24px; text-align: right; border-top: 1px solid var(--border-color); }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary-color); }
+
+        /* --- 详情页样式 --- */
+        .detail-header { background-color: #fff; padding: 16px 24px; border-bottom: 1px solid var(--border-color); }
+        .detail-header-top h1 { font-size: 20px; margin: 0; font-weight: 500; cursor: pointer; }
+        .detail-header-top .btn { margin-left: 8px; }
+        .tabs { margin-top: 20px; display: flex; }
+        .tab-item {
+            padding: 10px 16px; cursor: pointer; border-bottom: 2px solid transparent;
+            color: var(--text-secondary-color); margin-right: 24px; font-size: 16px;
+        }
+        .tab-item.active { color: var(--primary-color); border-bottom-color: var(--primary-color); font-weight: 500; }
+        .tab-content-panel { display: none; }
+        .tab-content-panel.active { display: block; }
+        .info-card { background-color: #fff; padding: 24px; margin: 24px; border: 1px solid var(--border-color); border-radius: var(--border-radius); }
+        
+        /* --- 活动规划页 --- */
+        .planning-layout { display: flex; gap: 24px; margin: 24px; align-items: flex-start; }
+        .stepper {
+            background: #fff; border: 1px solid var(--border-color); border-radius: var(--border-radius);
+            padding: 16px; width: 200px; flex-shrink: 0; position: sticky; top: 24px;
+        }
+        .step {
+            padding: 12px 16px; border-radius: var(--border-radius); display: flex; align-items: center;
+            gap: 12px; cursor: pointer; transition: background-color 0.2s; margin-bottom: 8px;
+        }
+        .step:hover, .step.active { background-color: #f0f5ff; }
+        .step-icon { width: 20px; height: 20px; }
+        .step-title { font-weight: 500; }
+        .planning-main-content { flex-grow: 1; }
+        .content-section {
+            background: #fff; border: 1px solid var(--border-color); border-radius: var(--border-radius);
+            margin-bottom: 24px; scroll-margin-top: 24px;
+        }
+        .content-section-header { padding: 16px 24px; border-bottom: 1px solid var(--border-color); }
+        .content-section-header h3 { margin: 0; font-size: 16px; font-weight: 500; }
+        .content-section-body { padding: 24px; }
+
+        /* --- 内容选择样式 --- */
+        .material-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .material-card {
+            border: 1px solid var(--border-color); border-radius: var(--border-radius);
+            padding: 16px; cursor: pointer; position: relative;
+        }
+        .material-card.selected { border-color: var(--primary-color); box-shadow: 0 0 0 2px var(--primary-color); }
+        .material-card h5 { margin: 0 0 8px; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .material-card p { margin: 0; font-size: 12px; color: var(--text-secondary-color); }
+        
+        /* 内容回显样式 */
+        #selected-materials-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;}
+        .selected-material-card { position: relative; }
+        .remove-material-btn {
+            position: absolute; top: -8px; right: -8px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: #ccc; color: white; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; line-height: 1;
+        }
+        
+        /* 会议自动化流程样式 */
+        .flow-subsection { margin-bottom: 24px; }
+        .flow-subsection h4 {
+            margin: 0 0 16px; font-weight: 500; font-size: 15px;
+            padding-bottom: 8px; border-bottom: 1px solid var(--border-color);
+        }
+        .action-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+        .action-card {
+            border: 1px solid var(--border-color); border-radius: var(--border-radius);
+            padding: 16px; cursor: pointer; display: flex; flex-direction: column; 
+            transition: all 0.2s; position: relative;
+        }
+        .action-card:hover { border-color: var(--primary-color); }
+        .action-card.selected { border-color: var(--primary-color); background-color: #fffaf5; }
+        .action-card-main { display: flex; align-items: flex-start; gap: 12px; }
+        .action-card-icon { flex-shrink: 0; width: 36px; height: 36px; }
+        .action-card-info h5 { margin: 0 0 4px; font-weight: 500; }
+        .action-card-info p { margin: 0; font-size: 12px; color: var(--text-secondary-color); }
+        .action-card-edit-btn {
+            position: absolute; top: 8px; right: 8px; font-size: 12px;
+            background: #eee; border-radius: 4px; padding: 2px 6px; color: #555;
+        }
+        .action-card-details {
+            font-size: 12px; color: var(--text-secondary-color); margin-top: 12px;
+            padding-top: 12px; border-top: 1px dashed var(--border-color);
+        }
+        .flow-actions { text-align: right; margin-top: 24px; }
+
+        /* --- 通用表单控件 --- */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-group input[type="number"], .form-group input[type="text"] {
+            width: 80px; padding: 6px 8px; border: 1px solid var(--border-color); border-radius: var(--border-radius);
+        }
+        .radio-group label { display: block; margin-bottom: 8px; }
+
+    </style>
+</head>
+<body>
+
+    <!-- ======================= 页面 1: 营销活动列表 (保持不变) ======================= -->
+    <div id="campaign-list-page" class="container">
+        <div class="header"><h1>营销活动</h1><button id="show-create-modal-btn" class="btn btn-primary">新建</button></div>
+        <div class="table-container"><table><thead><tr><th>ID</th><th>名称</th><th>类型</th><th>状态</th><th>开始时间</th><th>产品</th></tr></thead><tbody><tr><td>156</td><td>内容营销测试001</td><td>内容营销</td><td><span class="status-chip">执行中</span></td><td>2025-06-13 15:32</td><td>group0110,group...</td></tr><tr><td>154</td><td>3333</td><td>内容营销</td><td><span class="status-chip">执行中</span></td><td>2025-08-12 17:42</td><td>Delta_AD</td></tr></tbody></table></div>
+    </div>
+    
+    <!-- ======================= 模态框: 新建营销活动 (保持不变) ======================= -->
+    <div id="create-campaign-modal" class="modal-overlay">
+        <div class="modal-content modal-content-sm">
+            <div class="modal-header"><h2 class="flex-between" style="width: 100%;">新建营销活动 <button class="modal-close">&times;</button></h2></div>
+            <div class="modal-body"><form id="create-campaign-form"><div class="form-group"><label for="campaign-type">营销活动类型</label><select id="campaign-type" class="form-select"><option value="内容营销">内容营销</option><option value="会议营销" selected>会议营销</option></select></div><div class="form-group"><label for="campaign-name" class="required">活动名称</label><input type="text" id="campaign-name" class="form-control" required></div><div class="form-group"><label for="campaign-desc">描述</label><textarea id="campaign-desc" class="form-control"></textarea></div><div class="form-group"><label for="campaign-products">产品</label><input type="text" id="campaign-products" class="form-control" placeholder="输入产品名，用逗号隔开"></div></form></div>
+            <div class="modal-footer"><button class="btn modal-cancel-btn">取消</button><button id="confirm-create-btn" class="btn btn-primary">确定</button></div>
+        </div>
+    </div>
+
+    <!-- ======================= 页面 2: 营销详情页 ======================= -->
+    <div id="campaign-detail-page" class="hidden">
+        <header class="detail-header">
+            <div class="detail-header-top flex-between">
+                 <h1 id="detail-page-title">&larr; 营销详情</h1>
+                 <div class="actions"><button class="btn btn-primary">编辑</button><button class="btn">发布</button><button class="btn">删除</button></div>
+            </div>
+            <nav class="tabs">
+                <div class="tab-item" data-tab="basic-info">基本信息</div>
+                <div class="tab-item active" data-tab="planning">活动规划</div>
+                <div class="tab-item" data-tab="audience">目标人群</div>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Tab 1: 基本信息 -->
+            <div id="tab-content-basic-info" class="tab-content-panel"><div class="info-card"><div class="info-grid"><div class="info-label">营销活动类型</div><div id="detail-type" class="info-value"></div><div class="info-label">描述</div><div id="detail-desc" class="info-value"></div><div class="info-label">活动名称</div><div id="detail-name" class="info-value"></div><div class="info-label">产品</div><div id="detail-products" class="info-value product-tags"></div><div class="info-label">状态</div><div class="info-value">草稿</div></div></div></div>
+            
+            <!-- Tab 2: 活动规划 -->
+            <div id="tab-content-planning" class="tab-content-panel active">
+                <div class="planning-layout">
+                    <aside class="stepper"><div class="step" data-step="audience"><svg class="step-icon" id="step-icon-audience" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#D1D5DB" stroke-width="2"/><path class="checkmark hidden" d="M8 12L11 15L16 9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="step-title">目标人群</span></div><div class="step" data-step="content"><svg class="step-icon" id="step-icon-content" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#D1D5DB" stroke-width="2"/><path class="checkmark hidden" d="M8 12L11 15L16 9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="step-title">内容</span></div><div class="step" data-step="flow"><svg class="step-icon" id="step-icon-flow" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#D1D5DB" stroke-width="2"/><path class="checkmark hidden" d="M8 12L11 15L16 9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="step-title">会议自动化流程</span></div></aside>
+                    <div class="planning-main-content">
+                        <!-- 目标人群设置 -->
+                        <section id="section-audience" class="content-section"><div class="content-section-header"><h3>目标人群</h3></div><div class="content-section-body"><div id="audience-empty-state"><p>您还未创建目标人群列表</p><button id="show-audience-modal-btn" class="btn btn-primary">新建目标人群列表</button></div><div id="audience-summary" class="hidden"><div style="display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 24px;"><button class="btn btn-primary">重新创建人群列表</button><button class="btn">查看人群</button></div><div class="audience-stats-layout"><div class="stat-card"><div class="stat-numbers"><div class="stat-item"><div class="value">11</div><div class="label">目标总数</div></div><div class="stat-item"><div class="value">32</div><div class="label">区域数</div></div></div></div><div class="chart-card"><h4>企微绑定状态分布</h4><div class="chart-placeholder">[模拟] 环形图</div></div><div class="chart-card" style="grid-column: 1 / -1;"><h4>地区分布</h4><div class="chart-placeholder">[模拟] 地图 + 条形图</div></div></div></div></div></section>
+                        <!-- 内容设置 -->
+                        <section id="section-content" class="content-section">
+                            <div class="content-section-header flex-between"><h3>内容</h3><button id="add-more-material-btn" class="btn hidden">继续添加</button></div>
+                            <div class="content-section-body">
+                                <div id="selected-materials-container"></div>
+                                <div id="content-empty-state"><p>请选择本次活动需要用到的内容材料</p><button id="show-material-modal-btn" class="btn btn-primary">从资料库选择</button></div>
+                            </div>
+                        </section>
+                         <!-- 流程设置 -->
+                        <section id="section-flow" class="content-section">
+                            <div class="content-section-header flex-between"><h3>会议自动化流程</h3> <button id="edit-flow-btn" class="btn hidden">重新编辑</button> </div>
+                            <div class="content-section-body">
+                                <div id="flow-edit-view"><div class="flow-subsection"><h4>会前</h4><div class="action-cards-grid" id="flow-pre-meeting"></div></div><div class="flow-subsection"><h4>会中</h4><div class="action-cards-grid" id="flow-mid-meeting"></div></div><div class="flow-subsection"><h4>会后</h4><div class="action-cards-grid" id="flow-post-meeting"></div></div><div class="flow-actions"><button id="save-flow-btn" class="btn btn-primary">保存流程</button></div></div>
+                                <div id="flow-summary-view" class="hidden"></div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+            <!-- Tab 3: 目标人群 -->
+            <div id="tab-content-audience" class="tab-content-panel"><div class="info-card"><p>这里是目标人群的详细列表...</p></div></div>
+        </main>
+    </div>
+    
+    <!-- ======================= 模态框: 通用和特定配置 ======================= -->
+    <div id="create-audience-modal" class="modal-overlay">
+        <div class="modal-content modal-content-lg">
+            <div class="modal-header flex-between" style="width: 100%;"><h2>新建目标人群列表</h2><button class="modal-close">&times;</button></div>
+            <div class="modal-body">
+                <div class="audience-modal-section">
+                    <h3>标签筛选</h3>
+                    <div class="tag-group" style="padding: 10px; border: 1px solid #eee; border-radius: 4px;">
+                        <span>医生产品分级: </span><span class="tag active">TST001 - A</span><span class="tag">TST001 - B</span>
+                        <span class="tag">贝伐珠单抗 - A</span><span class="tag">拉帕替尼 - A</span><span class="tag">更多...</span>
+                    </div>
+                </div>
+                 <div class="audience-modal-section">
+                    <h3>人群属性筛选</h3>
+                    <p style="color: #888;">(此处为选择框和输入框的交互)</p>
+                </div>
+                 <div class="audience-modal-section">
+                    <h3>人群范围</h3>
+                    <p style="color: #888;">(此处为单选框)</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn modal-cancel-btn">取消</button>
+                <button id="confirm-create-audience-btn" class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+    <div id="select-material-modal" class="modal-overlay">
+         <div class="modal-content modal-content-lg">
+            <div class="modal-header flex-between" style="width: 100%;"><h2>选择内容</h2><button class="modal-close">&times;</button></div>
+            <div class="modal-body">
+                <div id="material-grid" class="material-grid"></div>
+                <div id="material-pagination" class="pagination"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn modal-cancel-btn">取消</button>
+                <button id="confirm-select-material-btn" class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+    <div id="action-card-config-modal" class="modal-overlay">
+        <div class="modal-content modal-content-sm">
+            <div class="modal-header flex-between" style="width: 100%;"><h2 id="config-modal-title"></h2><button class="modal-close">&times;</button></div>
+            <div id="config-modal-body" class="modal-body"></div>
+            <div class="modal-footer"><button class="btn modal-cancel-btn">取消</button><button id="config-modal-save-btn" class="btn btn-primary">保存</button></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- 全局变量和元素获取 ---
+            const listPage = document.getElementById('campaign-list-page');
+            const detailPage = document.getElementById('campaign-detail-page');
+
+            // --- 页面切换逻辑 ---
+            const showListPage = () => { listPage.style.display = 'block'; detailPage.classList.add('hidden'); };
+            const showDetailPage = () => { listPage.style.display = 'none'; detailPage.classList.remove('hidden'); };
+            document.getElementById('detail-page-title').addEventListener('click', showListPage);
+
+            // --- 小模态框：新建营销活动 ---
+            const createCampaignModal = setupModal('create-campaign-modal', 'show-create-modal-btn');
+            document.getElementById('confirm-create-btn').addEventListener('click', () => {
+                const campaignName = document.getElementById('campaign-name').value;
+                if (!campaignName) { alert('活动名称不能为空！'); return; }
+                showDetailPage();
+                createCampaignModal.close();
+                switchTab('planning');
+            });
+            
+            // --- Tab 切换逻辑 ---
+            const tabs = document.querySelectorAll('.tab-item');
+            const tabPanels = document.querySelectorAll('.tab-content-panel');
+            const switchTab = (tabName) => {
+                 tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.tab === tabName));
+                 tabPanels.forEach(panel => panel.classList.toggle('active', panel.id === `tab-content-${tabName}`));
+            };
+            tabs.forEach(tab => tab.addEventListener('click', () => switchTab(tab.dataset.tab)));
+
+            // --- 活动规划页逻辑 ---
+            const steps = document.querySelectorAll('.step');
+            steps.forEach(step => step.addEventListener('click', () => document.getElementById(`section-${step.dataset.step}`).scrollIntoView({ behavior: 'smooth' })));
+            
+            const setStepCompleted = (stepName, completed) => {
+                const icon = document.getElementById(`step-icon-${stepName}`);
+                const circle = icon.querySelector('path:first-child');
+                const checkmark = icon.querySelector('.checkmark');
+                if (completed) {
+                    circle.setAttribute('fill', 'var(--primary-color)');
+                    circle.setAttribute('stroke', 'var(--primary-color)');
+                    checkmark.classList.remove('hidden');
+                } else {
+                    circle.setAttribute('fill', 'none');
+                    circle.setAttribute('stroke', '#D1D5DB');
+                    checkmark.classList.add('hidden');
+                }
+            };
+            
+            // 1. 目标人群逻辑
+            setupModal('create-audience-modal', 'show-audience-modal-btn');
+            document.getElementById('confirm-create-audience-btn').addEventListener('click', () => {
+                document.getElementById('audience-empty-state').classList.add('hidden');
+                document.getElementById('audience-summary').classList.remove('hidden');
+                setStepCompleted('audience', true);
+                document.getElementById('create-audience-modal').classList.remove('active');
+            });
+
+            // 2. 内容选择逻辑
+            const materialModal = setupModal('select-material-modal', 'show-material-modal-btn');
+            document.getElementById('add-more-material-btn').addEventListener('click', () => materialModal.open());
+            const selectedMaterialsContainer = document.getElementById('selected-materials-container');
+            
+            document.getElementById('confirm-select-material-btn').addEventListener('click', () => {
+                document.querySelectorAll('#material-grid .material-card.selected').forEach(cardNode => {
+                    const materialId = cardNode.dataset.id;
+                    if (!document.querySelector(`.selected-material-card[data-id="${materialId}"]`)) {
+                        const newCard = document.createElement('div');
+                        newCard.className = 'material-card selected-material-card';
+                        newCard.dataset.id = materialId;
+                        newCard.innerHTML = `${cardNode.innerHTML}<button class="remove-material-btn">&times;</button>`;
+                        newCard.querySelector('.remove-material-btn').addEventListener('click', (e) => {
+                            e.stopPropagation(); newCard.remove(); updateContentSectionUI();
+                        });
+                        selectedMaterialsContainer.appendChild(newCard);
+                    }
+                });
+                updateContentSectionUI();
+                setStepCompleted('content', true);
+                materialModal.close();
+            });
+
+            const updateContentSectionUI = () => {
+                const hasSelection = selectedMaterialsContainer.children.length > 0;
+                document.getElementById('content-empty-state').classList.toggle('hidden', hasSelection);
+                document.getElementById('add-more-material-btn').classList.toggle('hidden', !hasSelection);
+            };
+
+            // 3. 会议自动化流程逻辑
+            const configModal = setupModal('action-card-config-modal');
+            let currentEditingCardId = null;
+
+            const flowData = {
+                pre: { title: '会前', items: [ { id: 'invite', name: '参会人邀约', desc: '将邀请函群发给计划邀请的医生', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' }, { id: 'material_pre', name: '材料推送', desc: '将会议材料群发给参会人', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', editable: true, settings: { target: '接受邀请的参会人', time: 30 } }, { id: 'survey_pre', name: '问卷推送', desc: '将会议问卷群发给参会人', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01', editable: true, settings: { target: '接受邀请的参会人', time: 15 } } ] },
+                mid: { title: '会中', items: [ { id: 'reminder', name: '会前提醒', desc: '会议开始前进行会议提醒', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9', editable: true, settings: { target: '接受邀请的参会人', timeMode: 'before', timeValue: 5 } } ] },
+                post: { title: '会后', items: [ { id: 'material_post', name: '材料推送', desc: '将会议材料群发给参会人', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', editable: true, settings: { target: '有效参会人', time: 60 } }, { id: 'survey_post', name: '问卷推送', desc: '将会议问卷群发给参会人', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01', editable: true, settings: { target: '有效参会人', time: 120 } }, { id: 'visit', name: '拜访提醒', desc: '对部分参会人为代表创建会后拜访任务', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21v-1a6 6 0 00-5.197-5.975M15 10a4 4 0 11-8 0 4 4 0 018 0z', editable: true, settings: { target: '有效参会人', time: 1440 } } ] }
+            };
+            let savedFlowState = {};
+
+            const createCardHTML = (item) => {
+                const detailsHTML = item.editable && item.settings ? `<div class="action-card-details">${getSettingsString(item.id, item.settings)}</div>` : '';
+                const editBtnHTML = item.editable ? `<button class="action-card-edit-btn hidden">编辑</button>` : '';
+                return `<div class="action-card-main"><div class="action-card-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="${item.icon}" /></svg></div><div class="action-card-info"><h5>${item.name}</h5><p>${item.desc}</p></div></div>${detailsHTML}${editBtnHTML}`;
+            };
+
+            const renderFlowCards = () => {
+                Object.entries(flowData).forEach(([key, value]) => {
+                    const container = document.getElementById(`flow-${key}-meeting`);
+                    container.innerHTML = value.items.map(item => `<div class="action-card" data-id="${item.id}" data-key="${key}">${createCardHTML(item)}</div>`).join('');
+                });
+
+                document.querySelectorAll('.action-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('action-card-edit-btn')) return;
+                        card.classList.toggle('selected');
+                        const editBtn = card.querySelector('.action-card-edit-btn');
+                        if(editBtn) editBtn.classList.toggle('hidden', !card.classList.contains('selected'));
+                    });
+                    const editBtn = card.querySelector('.action-card-edit-btn');
+                    if (editBtn) editBtn.addEventListener('click', () => openConfigModal(card.dataset.id));
+                });
+            };
+
+            const openConfigModal = (id) => {
+                currentEditingCardId = id;
+                const item = findFlowItem(id);
+                document.getElementById('config-modal-title').textContent = `编辑: ${item.name}`;
+                document.getElementById('config-modal-body').innerHTML = buildModalForm(id, item.settings);
+                configModal.open();
+            };
+            
+            document.getElementById('config-modal-save-btn').addEventListener('click', () => {
+                const item = findFlowItem(currentEditingCardId);
+                const form = document.getElementById('config-modal-body');
+                // Save settings from form to data object
+                if (currentEditingCardId === 'reminder') {
+                    item.settings.target = form.querySelector('[name="target"]').value;
+                    item.settings.timeMode = form.querySelector('[name="timeMode"]:checked').value;
+                    item.settings.timeValue = form.querySelector('[name="timeValue"]').value;
+                } else {
+                    item.settings.target = form.querySelector('[name="target"]').value;
+                    item.settings.time = form.querySelector('[name="time"]').value;
+                }
+                // Update card display
+                const card = document.querySelector(`.action-card[data-id="${currentEditingCardId}"]`);
+                if (card) card.querySelector('.action-card-details').innerHTML = getSettingsString(currentEditingCardId, item.settings);
+                configModal.close();
+            });
+
+            const findFlowItem = id => {
+                for (const key in flowData) {
+                    const item = flowData[key].items.find(i => i.id === id);
+                    if (item) return item;
+                }
+            };
+            
+            const buildModalForm = (id, settings) => {
+                let html = '';
+                // Common target options
+                if (id.startsWith('material_pre') || id === 'survey_pre' || id === 'reminder') {
+                    html += `<div class="form-group"><label>提醒目标</label><div class="radio-group"><label><input type="radio" name="target" value="接受邀请的参会人" checked> 接受邀请的参会人</label></div></div>`;
+                } else if (id.startsWith('material_post') || id === 'survey_post' || id === 'visit') {
+                    html += `<div class="form-group"><label>提醒目标</label><div class="radio-group"><label><input type="radio" name="target" value="有效参会人" checked> 有效参会人</label></div></div>`;
+                }
+                // Time options
+                if (id === 'reminder') {
+                    html += `<div class="form-group"><label>提醒时间</label><div class="radio-group">
+                        <label><input type="radio" name="timeMode" value="start" ${settings.timeMode === 'start' ? 'checked' : ''}> 会议开始时</label>
+                        <label><input type="radio" name="timeMode" value="before" ${settings.timeMode === 'before' ? 'checked' : ''}> 会议开始前 <input type="number" name="timeValue" value="${settings.timeValue || ''}"> 分钟</label>
+                    </div></div>`;
+                } else if (id.includes('_pre')) {
+                    html += `<div class="form-group"><label>推送时间</label>会议开始前 <input type="number" name="time" value="${settings.time || ''}"> 分钟</div>`;
+                } else if (id.includes('_post') || id === 'visit') {
+                     html += `<div class="form-group"><label>提醒时间</label>会议结束后 <input type="number" name="time" value="${settings.time || ''}"> 分钟</div>`;
+                }
+                return html;
+            };
+
+            const getSettingsString = (id, settings) => {
+                if (!settings) return '';
+                let parts = [];
+                if (settings.target) parts.push(`提醒目标: ${settings.target}`);
+                if (id === 'reminder') {
+                    if (settings.timeMode === 'start') parts.push('提醒时间: 会议开始时');
+                    else if (settings.timeValue) parts.push(`提醒时间: 会议开始前 ${settings.timeValue} 分钟`);
+                } else if (settings.time) {
+                    const prefix = id.includes('_pre') ? '会议开始前' : '会议结束后';
+                    parts.push(`提醒时间: ${prefix} ${settings.time} 分钟`);
+                }
+                return parts.join('<br>');
+            };
+            
+            document.getElementById('save-flow-btn').addEventListener('click', () => {
+                savedFlowState = {};
+                document.querySelectorAll('.action-card.selected').forEach(card => {
+                    const key = card.dataset.key;
+                    if (!savedFlowState[key]) savedFlowState[key] = [];
+                    savedFlowState[key].push(card.dataset.id);
+                });
+                renderSummaryView(savedFlowState);
+                setFlowView('summary');
+                setStepCompleted('flow', true);
+            });
+            
+            const renderSummaryView = (state) => {
+                const summaryContainer = document.getElementById('flow-summary-view');
+                summaryContainer.innerHTML = Object.entries(flowData).map(([key, value]) => {
+                    const selectedIds = state[key] || [];
+                    if (selectedIds.length === 0) return '';
+                    const itemsHtml = value.items.filter(item => selectedIds.includes(item.id))
+                        .map(item => `<div class="action-card">${createCardHTML(item)}</div>`).join('');
+                    return `<div class="flow-subsection"><h4>${value.title}</h4><div class="action-cards-grid">${itemsHtml}</div></div>`;
+                }).join('');
+            };
+
+            const setFlowView = (view) => {
+                document.getElementById('flow-edit-view').classList.toggle('hidden', view === 'summary');
+                document.getElementById('flow-summary-view').classList.toggle('hidden', view === 'edit');
+                document.getElementById('edit-flow-btn').classList.toggle('hidden', view === 'edit');
+            };
+
+            document.getElementById('edit-flow-btn').addEventListener('click', () => {
+                setFlowView('edit');
+                document.querySelectorAll('.action-card').forEach(card => {
+                    const key = card.dataset.key;
+                    const id = card.dataset.id;
+                    card.classList.toggle('selected', savedFlowState[key] && savedFlowState[key].includes(id));
+                    const editBtn = card.querySelector('.action-card-edit-btn');
+                    if(editBtn) editBtn.classList.toggle('hidden', !card.classList.contains('selected'));
+                });
+            });
+            
+            renderFlowCards();
+
+            // --- 通用模态框设置函数 ---
+            function setupModal(modalId, openBtnId) {
+                const modal = document.getElementById(modalId); if (!modal) return {};
+                const openBtn = document.getElementById(openBtnId);
+                const closeBtns = modal.querySelectorAll('.modal-close, .modal-cancel-btn');
+                const open = () => modal.classList.add('active');
+                const close = () => modal.classList.remove('active');
+                if (openBtn) openBtn.addEventListener('click', open);
+                closeBtns.forEach(btn => btn.addEventListener('click', close));
+                modal.addEventListener('click', e => { if (e.target === modal) close(); });
+                return { open, close };
+            }
+            
+            // --- 内容选择模态框 - 数据与分页 ---
+            const materialModalLogic = (() => {
+                const grid = document.getElementById('material-grid');
+                const pagination = document.getElementById('material-pagination');
+                const totalMaterials = 180, itemsPerPage = 9;
+                let currentPage = 1;
+
+                const render = () => {
+                    if(!grid || !pagination) return;
+                    grid.innerHTML = '';
+                    const start = (currentPage - 1) * itemsPerPage;
+                    for (let i = start; i < start + itemsPerPage && i < totalMaterials; i++) {
+                        const card = document.createElement('div');
+                        card.className = 'material-card';
+                        card.dataset.id = `material-${i}`;
+                        card.innerHTML = `<h5>资料文件 ${i + 1}</h5><p>发布时间: 2025-09-${Math.floor(i/10) + 1}</p>`;
+                        if (document.querySelector(`.selected-material-card[data-id="material-${i}"]`)) {
+                            card.classList.add('selected');
+                        }
+                        card.addEventListener('click', () => card.classList.toggle('selected'));
+                        grid.appendChild(card);
+                    }
+                    renderPagination();
+                };
+
+                const renderPagination = () => {
+                    pagination.innerHTML = '';
+                    const totalPages = Math.ceil(totalMaterials / itemsPerPage);
+                    const createBtn = (text, page, isDisabled = false) => {
+                        const btn = document.createElement('span');
+                        btn.className = `page-item ${currentPage === page ? 'active' : ''} ${isDisabled ? 'disabled' : ''}`;
+                        btn.textContent = text;
+                        if (!isDisabled) btn.addEventListener('click', () => { currentPage = page; render(); });
+                        return btn;
+                    };
+                    pagination.appendChild(createBtn('上一页', currentPage - 1, currentPage === 1));
+                    for (let i = 1; i <= totalPages; i++) pagination.appendChild(createBtn(i, i));
+                    pagination.appendChild(createBtn('下一页', currentPage + 1, currentPage === totalPages));
+                };
+                const showMaterialBtn = document.getElementById('show-material-modal-btn');
+                const addMoreMaterialBtn = document.getElementById('add-more-material-btn');
+
+                if(showMaterialBtn) showMaterialBtn.addEventListener('click', render);
+                if(addMoreMaterialBtn) addMoreMaterialBtn.addEventListener('click', render);
+            })();
+
+            // 初始化页面
+            switchTab('basic-info');
+            showListPage();
+        });
+    </script>
+</body>
+</html>
+

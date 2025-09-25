@@ -113,6 +113,20 @@
                 margin: 0 1rem;
             }
         }
+        
+        /* Modal Styles */
+        #imageModal {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        #imageModal.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #imageModal.visible > div {
+            transform: scale(1);
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -124,7 +138,7 @@
             <li><a href="#slide2" class="nav-link"><span class="nav-label">功能价值</span><span class="nav-dot"></span></a></li>
             <li><a href="#slide3" class="nav-link"><span class="nav-label">当前焦点</span><span class="nav-dot"></span></a></li>
             <li><a href="#slide4" class="nav-link"><span class="nav-label">核心流程</span><span class="nav-dot"></span></a></li>
-            <li><a href="#slide5" class="nav-link"><span class="nav-label">功能深潜</span><span class="nav-dot"></span></a></li>
+            <li><a href="#slide5" class="nav-link"><span class="nav-label">功能详述</span><span class="nav-dot"></span></a></li>
             <li><a href="#slide6" class="nav-link"><span class="nav-label">未来蓝图</span><span class="nav-dot"></span></a></li>
             <li><a href="#slide7" class="nav-link"><span class="nav-label">行动计划</span><span class="nav-dot"></span></a></li>
         </ul>
@@ -148,7 +162,7 @@
         <section id="slide2" class="section">
             <div class="container mx-auto max-w-5xl text-center">
                 <h2 class="text-4xl md:text-5xl font-bold mb-4">战略价值</h2>
-                <p class="text-xl text-gray-600 mb-16">Event Campaign：驱动合规、高效、可衡量的学术互动</p>
+                <p class="text-xl text-gray-600 mb-16">Event Campaign：有策略地驱动高效、可衡量的学术互动</p>
                 <div class="grid md:grid-cols-3 gap-12">
                     <div class="text-center p-6 bg-white rounded-xl shadow-sm">
                         <div class="flex items-center justify-center h-16 w-16 rounded-full bg-orange-100 text-orange-500 mx-auto mb-6">
@@ -235,6 +249,11 @@
                         <p class="text-sm text-gray-500">数据实时回流，市场部全盘监控活动进展与成效</p>
                     </div>
                 </div>
+                <div class="mt-16">
+                    <button id="show-overview-btn" class="bg-brand-orange text-white font-bold py-3 px-8 rounded-full hover:bg-orange-600 transition-colors duration-300 shadow-lg">
+                        流程概览
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -246,20 +265,28 @@
                     <div class="p-8 rounded-lg bg-gray-50">
                         <h3 class="text-3xl font-bold mb-6">市场部策略设置及任务分配</h3>
                         <ul class="space-y-4">
-                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">目标医生精准定向:</strong> 支持多维度标签组合，精准筛选目标医生群体。</span></li>
-                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">学术内容策略配置:</strong> 关联活动所需资料，确保内容合规统一。</span></li>
-                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">自动化客户旅程设计:</strong> 配置基于时间节点的自动化规则，如会前提醒、会后问卷推送。</span></li>
-                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">全景式活动追踪:</strong> 可视化数据看板，实时监控任务完成率、医生覆盖率等核心指标。</span></li>
+                            <li class="flex items-start"><span class="clickable-arrow text-orange-500 font-bold text-xl mr-3 mt-1 cursor-pointer hover:opacity-75 transition-opacity">&#10140;</span><span><strong class="text-gray-900">目标医生精准定向:</strong> 支持多维度标签组合，精准筛选目标医生群体。</span></li>
+                            <li class="flex items-start"><span class="clickable-arrow text-orange-500 font-bold text-xl mr-3 mt-1 cursor-pointer hover:opacity-75 transition-opacity">&#10140;</span><span><strong class="text-gray-900">学术内容策略配置:</strong> 关联活动所需资料，确保内容合规统一。</span></li>
+                            <li class="flex items-start"><span class="clickable-arrow text-orange-500 font-bold text-xl mr-3 mt-1 cursor-pointer hover:opacity-75 transition-opacity">&#10140;</span><span><strong class="text-gray-900">自动化客户旅程设计:</strong> 配置基于时间节点的自动化规则，如会前提醒、会后问卷推送。</span></li>
+                            <li class="flex items-start"><span class="clickable-arrow text-orange-500 font-bold text-xl mr-3 mt-1 cursor-pointer hover:opacity-75 transition-opacity">&#10140;</span><span><strong class="text-gray-900">全景式活动追踪:</strong> 可视化数据看板，实时监控任务完成率、医生覆盖率等核心指标。</span></li>
                         </ul>
                     </div>
                     <div class="p-8 rounded-lg bg-gray-50">
                         <h3 class="text-3xl font-bold mb-6">销售代表的高效执行工具</h3>
                         <ul class="space-y-4">
-                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">任务式驱动:</strong> 系统在恰当时间自动推送清晰任务指令，无需记忆SOP。</span></li>
-                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">策略性任务触发:</strong> 根据预设条件智能触发关键跟进，将精力聚焦于高价值互动，确保关键节点不遗漏。</span></li>
-                            <li class="flex items-start"><span class="text-orange-500 font-bold text-xl mr-3 mt-1">&#10140;</span><span><strong class="text-gray-900">策略对齐与校准:</strong> 强化任务源于统一 Campaign 策略，通过系统性指引确保执行与目标同频，减少沟通偏差。</span></li>
+                            <li class="flex items-start"><span class="clickable-arrow text-orange-500 font-bold text-xl mr-3 mt-1 cursor-pointer hover:opacity-75 transition-opacity">&#10140;</span><span><strong class="text-gray-900">任务式驱动:</strong> 系统在恰当时间自动推送清晰任务指令，无需记忆SOP。</span></li>
+                            <li class="flex items-start"><span class="clickable-arrow text-orange-500 font-bold text-xl mr-3 mt-1 cursor-pointer hover:opacity-75 transition-opacity">&#10140;</span><span><strong class="text-gray-900">策略性任务触发:</strong> 根据预设条件智能触发关键跟进，将精力聚焦于高价值互动，确保关键节点不遗漏。</span></li>
+                            <li class="flex items-start"><span class="clickable-arrow text-orange-500 font-bold text-xl mr-3 mt-1 cursor-pointer hover:opacity-75 transition-opacity">&#10140;</span><span><strong class="text-gray-900">策略对齐与校准:</strong> 强化任务源于统一 Campaign 策略，通过系统性指引确保执行与目标同频，减少沟通偏差。</span></li>
                         </ul>
                     </div>
+                </div>
+                <div class="mt-16">
+                    <a href="./vue-demo.html" class="inline-block bg-gray-800 text-white font-bold py-3 px-8 rounded-full hover:bg-gray-700 transition-colors duration-300 shadow-lg" style="margin-right: 100px;">
+                        市场部创建侧 DEMO
+                    </a>
+                    <a href="./rep.html" class="inline-block bg-gray-800 text-white font-bold py-3 px-8 rounded-full hover:bg-gray-700 transition-colors duration-300 shadow-lg">
+                        代表执行侧 DEMO
+                    </a>
                 </div>
             </div>
         </section>
@@ -311,12 +338,22 @@
             </div>
         </section>
     </main>
+    
+    <!-- Image Modal -->
+    <div id="imageModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="absolute inset-0" id="modalBackdrop"></div>
+        <div class="relative bg-white p-2 rounded-lg shadow-2xl transform scale-95 transition-transform duration-300">
+            <img id="modalImage" src="" alt="示意图" class="max-w-[80vw] max-h-[80vh] rounded">
+        </div>
+    </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const sections = document.querySelectorAll('.section');
             const navLinks = document.querySelectorAll('.nav-link');
 
+            // --- Intersection Observer for section animations ---
             const observerOptions = {
                 root: null,
                 rootMargin: '0px',
@@ -349,6 +386,34 @@
                  const firstNavLink = document.querySelector(`.nav-link[href="#${sections[0].id}"]`);
                  if(firstNavLink) firstNavLink.classList.add('active');
             }
+
+            // --- Modal Logic ---
+            const imageModal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalBackdrop = document.getElementById('modalBackdrop');
+            const showOverviewBtn = document.getElementById('show-overview-btn');
+            const clickableArrows = document.querySelectorAll('.clickable-arrow');
+
+            const openModal = (imageUrl) => {
+                modalImage.src = imageUrl;
+                imageModal.classList.add('visible');
+            };
+
+            const closeModal = () => {
+                imageModal.classList.remove('visible');
+            };
+
+            showOverviewBtn.addEventListener('click', () => {
+                openModal('./ppt-image/whiteboard_exported_image.png');
+            });
+
+            clickableArrows.forEach((arrow, index) => {
+                arrow.addEventListener('click', () => {
+                    openModal(`./ppt-image/${index + 1}.png`);
+                });
+            });
+
+            modalBackdrop.addEventListener('click', closeModal);
         });
     </script>
 </body>

@@ -1,0 +1,2287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>营销活动原型 DEMO - Vue.js版本</title>
+    <style>
+        /* --- 全局与重置样式 --- */
+        :root {
+            --primary-color: #f58220;
+            --primary-hover-color: #e8771a;
+            --border-color: #e8e8e8;
+            --background-color: #f7f7f7;
+            --text-color: #333;
+            --text-secondary-color: #888;
+            --text-light-color: #aaa;
+            --table-header-bg: #fafafa;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --border-radius: 4px;
+            --blue-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        /* --- 辅助类 --- */
+        .hidden { display: none !important; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .flex-center { display: flex; justify-content: center; align-items: center; }
+        .text-center { text-align: center; }
+        .mb-16 { margin-bottom: 16px; }
+        .mb-24 { margin-bottom: 24px; }
+        .mt-16 { margin-top: 16px; }
+
+        /* --- 容器和布局 --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: #fff;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        /* --- 按钮样式 --- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: #fff;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            text-align: center;
+            white-space: nowrap;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 130, 32, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
+            border-color: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(245, 130, 32, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover-color), #d6650f);
+            border-color: var(--primary-hover-color);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(245, 130, 32, 0.4);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* --- 表格样式 --- */
+        .table-container {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .table-container:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: linear-gradient(135deg, #fafafa, #f0f0f0);
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        tbody tr:hover {
+            background: linear-gradient(135deg, #f8f9fa, #f1f3f4);
+            transform: scale(1.01);
+        }
+
+        .status-chip {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: var(--success-color);
+            color: #fff;
+        }
+
+        /* --- 模态框 (Modal) 样式 --- */
+        .modal-overlay {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            z-index: 1000; 
+            opacity: 0; 
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-overlay.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.1);
+            transform: scale(0.9) translateY(20px); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 24px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .modal-overlay.active .modal-content { 
+            transform: scale(1) translateY(0); 
+        }
+        
+        .modal-content-sm { 
+            width: 520px; 
+        }
+        
+        .modal-content-lg { 
+            width: 900px; 
+        }
+        
+        .modal-header { 
+            padding: 20px 24px; 
+            border-bottom: 1px solid var(--border-color);
+            background-color: #fafafa;
+        }
+        
+        .modal-header h2 { 
+            margin: 0; 
+            font-size: 18px; 
+            font-weight: 600; 
+        }
+        
+        .modal-body { 
+            padding: 24px; 
+        }
+        
+        .modal-footer { 
+            padding: 16px 24px; 
+            text-align: right; 
+            border-top: 1px solid var(--border-color);
+            background-color: #fafafa;
+        }
+        
+        .modal-close { 
+            background: none; 
+            border: none; 
+            font-size: 24px; 
+            cursor: pointer; 
+            color: var(--text-secondary-color);
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* --- 表单控件 --- */
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        
+        .form-group label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(245, 130, 32, 0.15);
+            background: #fff;
+            transform: translateY(-1px);
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .required::after {
+            content: ' *';
+            color: var(--error-color);
+        }
+
+        /* --- 详情页样式 --- */
+        .detail-header { 
+            background-color: #fff; 
+            padding: 20px 24px; 
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .detail-header-top h1 { 
+            font-size: 20px; 
+            margin: 0; 
+            font-weight: 600; 
+            cursor: pointer;
+            color: var(--primary-color);
+            transition: color 0.2s ease;
+        }
+
+        .detail-header-top h1:hover {
+            color: var(--primary-hover-color);
+        }
+        
+        .detail-header-top .btn { 
+            margin-left: 8px; 
+        }
+        
+        .tabs { 
+            margin-top: 20px; 
+            display: flex; 
+        }
+        
+        .tab-item {
+            padding: 12px 20px; 
+            cursor: pointer; 
+            border-bottom: 3px solid transparent;
+            color: var(--text-secondary-color); 
+            margin-right: 24px; 
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-item:hover {
+            color: var(--primary-color);
+        }
+        
+        .tab-item.active { 
+            color: var(--primary-color); 
+            border-bottom-color: var(--primary-color); 
+        }
+        
+        .tab-content-panel { 
+            /* Vue使用v-show控制显示，不需要CSS控制 */
+        }
+        
+        .info-card { 
+            background-color: #fff; 
+            padding: 24px; 
+            margin: 24px; 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 16px 24px;
+            align-items: start;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: var(--text-secondary-color);
+        }
+
+        .info-value {
+            color: var(--text-color);
+        }
+
+        .product-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .product-tag {
+            background-color: #f0f5ff;
+            color: var(--blue-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* --- 目标人群统计 --- */
+        .audience-stats {
+            margin-top: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 16px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary-color);
+        }
+        
+        /* --- 活动规划页 --- */
+        .planning-layout { 
+            display: flex; 
+            gap: 24px; 
+            margin: 24px; 
+            align-items: flex-start; 
+        }
+        
+        .stepper {
+            background: #fff; 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--border-radius);
+            padding: 20px; 
+            width: 220px; 
+            flex-shrink: 0; 
+            position: sticky; 
+            top: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .step {
+            padding: 16px; 
+            border-radius: var(--border-radius); 
+            display: flex; 
+            align-items: center;
+            gap: 12px; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            margin-bottom: 12px;
+            border: 1px solid transparent;
+        }
+        
+        .step:hover { 
+            background-color: #f0f5ff;
+            border-color: var(--primary-color);
+        }
+        
+        .step.active { 
+            background-color: #f0f5ff;
+            border-color: var(--primary-color);
+        }
+        
+        .step-icon { 
+            width: 24px; 
+            height: 24px; 
+            flex-shrink: 0;
+        }
+        
+        .step-title { 
+            font-weight: 500; 
+            font-size: 14px;
+        }
+        
+        .planning-main-content { 
+            flex-grow: 1; 
+        }
+        
+        .content-section {
+            background: #fff; 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--border-radius);
+            margin-bottom: 24px; 
+            scroll-margin-top: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .content-section-header { 
+            padding: 20px 24px; 
+            border-bottom: 1px solid var(--border-color);
+            background-color: #fafafa;
+        }
+        
+        .content-section-header h3 { 
+            margin: 0; 
+            font-size: 16px; 
+            font-weight: 600; 
+        }
+        
+        .content-section-body { 
+            padding: 24px; 
+        }
+
+        /* --- 内容选择样式 --- */
+        .material-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 16px; 
+        }
+        
+        .material-card {
+            border: 1px solid var(--border-color); 
+            border-radius: 12px;
+            padding: 20px; 
+            cursor: pointer; 
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
+            overflow: hidden;
+        }
+
+        .material-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), #5a67d8);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .material-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            transform: translateY(-6px);
+        }
+
+        .material-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .material-card.selected { 
+            border-color: var(--primary-color); 
+            box-shadow: 0 8px 20px rgba(245, 130, 32, 0.25);
+            background: linear-gradient(135deg, #fffaf5 0%, #fff4e6 100%);
+        }
+
+        .material-card.selected::before {
+            transform: scaleX(1);
+        }
+        
+        .material-card h5 { 
+            margin: 0 0 8px; 
+            font-weight: 500; 
+            display: -webkit-box; 
+            -webkit-line-clamp: 1; 
+            -webkit-box-orient: vertical; 
+            overflow: hidden; 
+        }
+        
+        .material-card p { 
+            margin: 0; 
+            font-size: 12px; 
+            color: var(--text-secondary-color); 
+        }
+        
+        /* 内容回显样式 */
+        #selected-materials-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+            gap: 16px; 
+            margin-bottom: 16px;
+        }
+        
+        .selected-material-card { 
+            position: relative; 
+        }
+        
+        .remove-material-btn {
+            position: absolute; 
+            top: 8px; 
+            right: 8px;
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%;
+            background: var(--error-color); 
+            color: white; 
+            border: none; 
+            cursor: pointer;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 14px; 
+            line-height: 1;
+            transition: background-color 0.2s ease;
+        }
+
+        .remove-material-btn:hover {
+            background-color: #dc2626;
+        }
+        
+        /* 会议自动化流程样式 */
+        .flow-subsection { 
+            margin-bottom: 32px; 
+        }
+        
+        .flow-subsection h4 {
+            margin: 0 0 16px; 
+            font-weight: 600; 
+            font-size: 16px;
+            padding-bottom: 8px; 
+            border-bottom: 2px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .action-cards-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+            gap: 16px; 
+        }
+        
+        .action-card {
+            border: 1px solid var(--border-color); 
+            border-radius: 12px;
+            padding: 24px; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            position: relative;
+            background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), #5a67d8);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .action-card:hover { 
+            border-color: var(--primary-color);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            transform: translateY(-6px);
+        }
+
+        .action-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .action-card.selected { 
+            border-color: var(--primary-color); 
+            background: linear-gradient(135deg, #fffaf5 0%, #fff4e6 100%);
+            box-shadow: 0 8px 20px rgba(245, 130, 32, 0.25);
+        }
+
+        .action-card.selected::before {
+            transform: scaleX(1);
+        }
+        
+        .action-card-main { 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 12px; 
+        }
+        
+        .action-card-icon { 
+            flex-shrink: 0; 
+            width: 40px; 
+            height: 40px;
+            color: var(--primary-color);
+        }
+        
+        .action-card-info h5 { 
+            margin: 0 0 4px; 
+            font-weight: 600; 
+            font-size: 14px;
+        }
+        
+        .action-card-info p { 
+            margin: 0; 
+            font-size: 12px; 
+            color: var(--text-secondary-color); 
+            line-height: 1.4;
+        }
+        
+        .action-card-edit-btn {
+            position: absolute; 
+            top: 12px; 
+            right: 12px; 
+            font-size: 12px;
+            background: var(--primary-color); 
+            border-radius: 4px; 
+            padding: 4px 8px; 
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .action-card-edit-btn:hover {
+            background-color: var(--primary-hover-color);
+        }
+        
+        .action-card-details {
+            font-size: 12px; 
+            color: var(--text-secondary-color); 
+            margin-top: 12px;
+            padding-top: 12px; 
+            border-top: 1px dashed var(--border-color);
+            line-height: 1.4;
+        }
+        
+        .flow-actions { 
+            text-align: right; 
+            margin-top: 24px; 
+        }
+
+        /* --- 人群统计样式 --- */
+        .audience-stats-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+        }
+
+        .stat-numbers {
+            display: flex;
+            gap: 24px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .stat-item .label {
+            font-size: 12px;
+            color: var(--text-secondary-color);
+        }
+
+        .chart-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 20px;
+        }
+
+        .chart-card h4 {
+            margin: 0 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .chart-placeholder {
+            height: 120px;
+            background: #f9f9f9;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary-color);
+            font-size: 12px;
+        }
+
+        /* --- 分页样式 --- */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .page-item {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            background-color: #fff;
+        }
+
+        .page-item:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .page-item.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .page-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* --- 标签样式 --- */
+        .tag-group {
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: #fafafa;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            margin: 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: #fff;
+        }
+
+        .tag:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tag.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .audience-modal-section {
+            margin-bottom: 24px;
+        }
+
+        .audience-modal-section h3 {
+            margin: 0 0 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* --- 单选框样式 --- */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .radio-group input[type="radio"] {
+            margin: 0;
+        }
+
+        /* --- 响应式设计 --- */
+        @media (max-width: 768px) {
+            .planning-layout {
+                flex-direction: column;
+                margin: 16px;
+            }
+
+            .stepper {
+                width: 100%;
+                position: static;
+            }
+
+            .material-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .audience-stats-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content-lg,
+            .modal-content-sm {
+                width: 95%;
+                margin: 16px;
+            }
+        }
+
+        /* --- 动画效果 --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* --- 加载状态 --- */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            border: 1px solid #e8e8e8;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- ======================= 页面 1: 营销活动列表 ======================= -->
+        <div v-show="currentPage === 'list'" class="container">
+            <div class="header">
+                <h1>营销活动</h1>
+                <button @click="showCreateModal = true" class="btn btn-primary">新建</button>
+                <div class="modal-overlay" :class="{ active: showAudienceModal }">
+            <div class="modal-content modal-content-lg">
+                <div class="modal-header">
+                    <h2>目标人群列表</h2>
+                    <button class="modal-close" @click="showAudienceModal = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>医生</th>
+                                    <th>医生编码</th>
+                                    <th>医院</th>
+                                    <th>职称</th>
+                                    <th>职务</th>
+                                    <th>专长</th>
+                                    <th>性别</th>
+                                    <th>科室</th>
+                                    <th>已绑定</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="doctor in  audience && audience.doctors">
+                                    <td>{{ doctor.id }}</td>
+                                    <td>{{ doctor.name }}</td>
+                                    <td>{{ doctor.code }}</td>
+                                    <td>{{ doctor.hospital }}</td>
+                                    <td>{{ doctor.title }}</td>
+                                    <td>{{ doctor.position }}</td>
+                                    <td>{{ doctor.specialty }}</td>
+                                    <td>{{ doctor.gender }}</td>
+                                    <td>{{ doctor.department }}</td>
+                                    <td>{{ doctor.bound ? '是' : '否' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>名称</th>
+                            <th>类型</th>
+                            <th>状态</th>
+                            <th>开始时间</th>
+                            <th>产品</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="campaign in campaigns" :key="campaign.id" @click="viewCampaignDetail(campaign)">
+                            <td>{{ campaign.id }}</td>
+                            <td>{{ campaign.name }}</td>
+                            <td>{{ campaign.type }}</td>
+                            <td><span class="status-chip">{{ campaign.status }}</span></td>
+                            <td>{{ campaign.startTime }}</td>
+                            <td>{{ campaign.products }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- ======================= 模态框: 新建营销活动 ======================= -->
+        <div v-show="showCreateModal" class="modal-overlay" :class="{ active: showCreateModal }" @click="closeModalOnOverlay">
+            <div class="modal-content modal-content-sm" @click.stop>
+                <div class="modal-header">
+                    <h2 class="flex-between" style="width: 100%;">
+                        新建营销活动 
+                        <button @click="showCreateModal = false" class="modal-close">&times;</button>
+                    </h2>
+                </div>
+                <div class="modal-body">
+                    <form @submit.prevent="createCampaign">
+                        <div class="form-group">
+                            <label for="campaign-type">营销活动类型</label>
+                            <select v-model="newCampaign.type" id="campaign-type" class="form-select">
+                                <option value="内容营销">内容营销</option>
+                                <option value="会议营销">会议营销</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="campaign-name" class="required">活动名称</label>
+                            <input v-model="newCampaign.name" type="text" id="campaign-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="campaign-desc">描述</label>
+                            <textarea v-model="newCampaign.description" id="campaign-desc" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="campaign-products">产品</label>
+                            <input v-model="newCampaign.products" type="text" id="campaign-products" class="form-control" placeholder="输入产品名，用逗号隔开">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button @click="showCreateModal = false" class="btn">取消</button>
+                    <button @click="createCampaign" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======================= 页面 2: 营销详情页 ======================= -->
+        <div v-show="currentPage === 'detail'" class="fade-in">
+            <header class="detail-header">
+                <div class="detail-header-top flex-between">
+                     <h1 @click="goBackToList">&larr; 营销详情</h1>
+                     <div class="actions">
+                        <button class="btn btn-primary">编辑</button>
+                        <button class="btn" @click="publishCampaign">发布</button>
+                        <button class="btn">删除</button>
+                    </div>
+                </div>
+                <nav class="tabs">
+                    <div v-for="tab in tabs" 
+                         :key="tab.key" 
+                         @click="switchTab(tab.key)" 
+                         class="tab-item" 
+                         :class="{ active: activeTab === tab.key }">
+                        {{ tab.name }}
+                    </div>
+                    <div v-if="showAnalysisTab"
+                         @click="switchTab('analysis')" 
+                         class="tab-item" 
+                         :class="{ active: activeTab === 'analysis' }">
+                        追踪和分析
+                    </div>
+                </nav>
+            </header>
+
+            <main>
+                <!-- Tab 1: 基本信息 -->
+                <div v-show="activeTab === 'basic-info'" class="tab-content-panel fade-in">
+                    <div class="info-card">
+                        <div class="info-grid">
+                            <div class="info-label">营销活动类型</div>
+                            <div class="info-value">{{ currentCampaign.type }}</div>
+                            <div class="info-label">描述</div>
+                            <div class="info-value">{{ currentCampaign.description || '暂无描述' }}</div>
+                            <div class="info-label">活动名称</div>
+                            <div class="info-value">{{ currentCampaign.name }}</div>
+                            <div class="info-label">产品</div>
+                            <div class="info-value product-tags">
+                                <span v-for="product in getProductTags(currentCampaign.products)" :key="product" class="product-tag">
+                                    {{ product }}
+                                </span>
+                            </div>
+                            <div class="info-label">状态</div>
+                            <div class="info-value">草稿</div>
+
+                            <div class="info-label">目标决策</div>
+                            <div class="info-value">
+                                <select v-model="currentCampaign.targetDecision" @change="updateTargetMetricOptions" class="form-select">
+                                    <option disabled value="">请选择</option>
+                                    <option v-for="option in targetDecisionOptions" :key="option" :value="option">{{ option }}</option>
+                                </select>
+                            </div>
+
+                            <div class="info-label">目标衡量指标</div>
+                            <div class="info-value">
+                                <select v-model="currentCampaign.targetMetrics" class="form-select" multiple>
+                                    <option v-for="option in targetMetricOptions" :key="option" :value="option">{{ option }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab 2: 活动规划 -->
+                <div v-show="activeTab === 'planning'" class="tab-content-panel fade-in">
+                    <div class="planning-layout">
+                        <aside class="stepper">
+                            <div v-for="step in planningSteps" :key="step.key" 
+                                 @click="scrollToSection(step.key)" 
+                                 class="step" 
+                                 :class="{ active: step.completed }">
+                                <svg class="step-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" 
+                                          :stroke="step.completed ? 'var(--primary-color)' : '#D1D5DB'" 
+                                          :fill="step.completed ? 'var(--primary-color)' : 'none'" 
+                                          stroke-width="2"/>
+                                    <path v-if="step.completed" 
+                                          class="checkmark" 
+                                          d="M8 12L11 15L16 9" 
+                                          stroke="#fff" 
+                                          stroke-width="2" 
+                                          stroke-linecap="round" 
+                                          stroke-linejoin="round"/>
+                                </svg>
+                                <span class="step-title">{{ step.name }}</span>
+                            </div>
+                        </aside>
+                        
+                        <div class="planning-main-content">
+                            <!-- 目标人群设置 -->
+                            <section id="section-audience" class="content-section">
+                                <div class="content-section-header">
+                                    <h3>目标人群</h3>
+                                </div>
+                                <div class="content-section-body">
+                                    <div v-if="!audienceCreated" id="audience-empty-state">
+                                        <p>您还未创建目标人群列表</p>
+                                        <button @click="showAudienceModal = true" class="btn btn-primary">新建目标人群列表</button>
+                                    </div>
+                                    <div v-else id="audience-summary" class="fade-in">
+                                        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 24px;">
+                                            <button @click="recreateAudience" class="btn btn-primary">重新创建人群列表</button>
+                                            <button class="btn" @click="viewAudience">查看人群</button>
+                                        </div>
+                                        <div class="audience-stats-layout">
+                                            <div class="stat-card">
+                                                <div class="stat-numbers">
+                                                    <div class="stat-item">
+                                                        <div class="value">{{ audienceStats.total }}</div>
+                                                        <div class="label">目标总数</div>
+                                                    </div>
+                                                    <div class="stat-item">
+                                                        <div class="value">{{ audienceStats.regions }}</div>
+                                                        <div class="label">区域数</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="chart-card">
+                                                <h4>企微绑定状态分布</h4>
+                                                <div class="chart-placeholder">[模拟] 环形图</div>
+                                            </div>
+                                            <div class="chart-card" style="grid-column: 1 / -1;">
+                                                <h4>地区分布</h4>
+                                                <div class="chart-placeholder">[模拟] 地图 + 条形图</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            
+                            <!-- 内容设置 -->
+                            <section id="section-content" class="content-section">
+                                <div class="content-section-header flex-between">
+                                    <h3>内容</h3>
+                                    <button v-show="selectedMaterials.length > 0" @click="showMaterialModal = true" class="btn">继续添加</button>
+                                </div>
+                                <div class="content-section-body">
+                                    <div v-if="selectedMaterials.length > 0" id="selected-materials-container" class="fade-in">
+                                        <div v-for="material in selectedMaterials" :key="material.id" class="material-card selected-material-card">
+                                            <h5>{{ material.name }}</h5>
+                                            <p>{{ material.publishTime }}</p>
+                                            <button @click="removeMaterial(material.id)" class="remove-material-btn">&times;</button>
+                                        </div>
+                                    </div>
+                                    <div v-else id="content-empty-state">
+                                        <p>请选择本次活动需要用到的内容材料</p>
+                                        <button @click="showMaterialModal = true" class="btn btn-primary">从资料库选择</button>
+                                    </div>
+                                </div>
+                            </section>
+                             
+                            <!-- 流程设置 -->
+                            <section id="section-flow" class="content-section">
+                                <div class="content-section-header flex-between">
+                                    <h3>会议自动化流程</h3> 
+                                    <button v-show="flowSaved" @click="editFlow" class="btn">重新编辑</button> 
+                                </div>
+                                <div class="content-section-body">
+                                    <div v-show="!flowSaved" id="flow-edit-view">
+                                        <div v-for="(phase, key) in flowData" :key="key" class="flow-subsection">
+                                            <h4>{{ phase.title }}</h4>
+                                            <div class="action-cards-grid">
+                                                <div v-for="item in phase.items" :key="item.id" 
+                                                     @click="toggleFlowCard(item.id, key)" 
+                                                     class="action-card" 
+                                                     :class="{ selected: isFlowCardSelected(item.id, key) }">
+                                                    <div class="action-card-main">
+                                                        <div class="action-card-icon">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" :d="item.icon" />
+                                                            </svg>
+                                                        </div>
+                                                        <div class="action-card-info">
+                                                            <h5>{{ item.name }}</h5>
+                                                            <p>{{ item.desc }}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div v-if="item.editable && item.settings" class="action-card-details" v-html="getSettingsString(item.id, item.settings)"></div>
+                                                    <button v-if="item.editable && isFlowCardSelected(item.id, key)" 
+                                                            @click.stop="openConfigModal(item.id)" 
+                                                            class="action-card-edit-btn">编辑</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flow-actions">
+                                            <button @click="saveFlow" class="btn btn-primary">保存流程</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div v-show="flowSaved" id="flow-summary-view" class="fade-in">
+                                        <div v-for="(phase, key) in flowData" :key="key" class="flow-subsection">
+                                            <template v-if="getSelectedFlowItems(key).length > 0">
+                                                <h4>{{ phase.title }}</h4>
+                                                <div class="action-cards-grid">
+                                                    <div v-for="item in getSelectedFlowItems(key)" :key="item.id" class="action-card">
+                                                        <div class="action-card-main">
+                                                            <div class="action-card-icon">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" :d="item.icon" />
+                                                                </svg>
+                                                            </div>
+                                                            <div class="action-card-info">
+                                                                <h5>{{ item.name }}</h5>
+                                                                <p>{{ item.desc }}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div v-if="item.editable && item.settings" class="action-card-details" v-html="getSettingsString(item.id, item.settings)"></div>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- 任务设置 -->
+                            <section id="section-task" class="content-section">
+                                <div class="content-section-header">
+                                    <h3>任务设置</h3>
+                                </div>
+                                <div class="content-section-body">
+                                    <div v-if="!taskSettingsCreated" id="task-empty-state">
+                                        <p>您还未配置任务设置</p>
+                                        <button @click="showTaskSettingsModal = true" class="btn btn-primary">新建任务设置</button>
+                                    </div>
+                                    <div v-else id="task-summary" class="fade-in">
+                                        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 24px;">
+                                            <button @click="editTaskSettings" class="btn btn-primary">编辑设置</button>
+                                            <button class="btn" @click="viewTaskSettings">查看详情</button>
+                                        </div>
+                                        <div class="task-settings-display">
+                                            <div class="info-grid">
+                                                <div class="info-label">任务名称</div>
+                                                <div class="info-value">{{ taskSettings.taskName || '未设置' }}</div>
+                                                <div class="info-label">任务描述</div>
+                                                <div class="info-value">{{ taskSettings.taskDescription || '未设置' }}</div>
+                                                <div class="info-label">负责人</div>
+                                                <div class="info-value">{{ taskSettings.assignee || '未设置' }}</div>
+                                                <div class="info-label">优先级</div>
+                                                <div class="info-value">{{ taskSettings.priority === 'high' ? '高' : taskSettings.priority === 'medium' ? '中' : '低' }}</div>
+                                                <div class="info-label">截止日期</div>
+                                                <div class="info-value">{{ taskSettings.dueDate || '未设置' }}</div>
+                                                <div class="info-label">提醒时间</div>
+                                                <div class="info-value">{{ taskSettings.reminderTime }}小时前</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tab 3: 目标人群 -->
+                <div v-show="activeTab === 'audience'" class="tab-content-panel fade-in">
+                    <div class="info-card">
+                        <div class="flex-between" style="margin-bottom: 20px;">
+                            <h3>目标人群列表</h3>
+                            <div>
+                                <button @click="showAudienceModal = true" class="btn btn-primary" v-if="!audienceCreated">
+                                    <i class="icon-plus"></i> 新建目标人群
+                                </button>
+                                <button @click="recreateAudience" class="btn btn-secondary" v-if="audienceCreated">
+                                    <i class="icon-plus"></i> 重新圈定
+                                </button>
+                                <button class="btn btn-primary" v-if="audienceCreated">
+                                    导出
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div v-if="audienceCreated" class="fade-in">
+                            <div class="table-container" style="margin-top: 20px;">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>医生</th>
+                                            <th>医生编码</th>
+                                            <th>医院</th>
+                                            <th>职称</th>
+                                            <th>性别</th>
+                                            <th>科室</th>
+                                            <th>已移除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="doctor in audience && audience.doctors" :key="doctor.id">
+                                            <td>{{ doctor.id }}</td>
+                                            <td>{{ doctor.name }}</td>
+                                            <td>{{ doctor.code }}</td>
+                                            <td>{{ doctor.hospital }}</td>
+                                            <td>{{ doctor.position }}</td>
+                                            <td>{{ doctor.gender }}</td>
+                                            <td>{{ doctor.department }}</td>
+                                            <td>{{ doctor.level }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div v-else class="empty-state">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><path fill="none" stroke="#e0e0e0" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 12a5 5 0 1 0 0-10a5 5 0 0 0 0 10Zm0 0c-2.667 0-8 1.333-8 4v3h16v-3c0-2.667-5.333-4-8-4Z"/></svg>
+                            <p>暂无目标人群，快去创建一个吧</p>
+                        </div>
+                    </div>
+                </div>
+                <div v-show="activeTab === 'analysis'" class="tab-content-panel fade-in">
+                    <div class="info-card">
+                        <h3>追踪和分析</h3>
+                        <div class="chart-grid">
+                            <div class="chart-container">
+                                <h4>图表一：活动触达人数</h4>
+                                <div class="chart-placeholder"></div>
+                            </div>
+                            <div class="chart-container">
+                                <h4>图表二：内容点击率</h4>
+                                <div class="chart-placeholder"></div>
+                            </div>
+                            <div class="chart-container">
+                                <h4>图表三：渠道效果分析</h4>
+                                <div class="chart-placeholder"></div>
+                            </div>
+                            <div class="chart-container">
+                                <h4>图表四：用户参与度</h4>
+                                <div class="chart-placeholder"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <!-- ======================= 模态框: 新建目标人群 ======================= -->
+        <div v-show="showAudienceModal" class="modal-overlay" :class="{ active: showAudienceModal }" @click="closeModalOnOverlay">
+            <div class="modal-content modal-content-lg" @click.stop>
+                <div class="modal-header flex-between" style="width: 100%;">
+                    <h2>新建目标人群列表</h2>
+                    <button @click="showAudienceModal = false" class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="audience-modal-section">
+                        <h3>标签筛选</h3>
+                        <div class="tag-group">
+                            <span>医生产品分级: </span>
+                            <span v-for="tag in audienceTags" :key="tag.id" 
+                                  @click="toggleTag(tag.id)" 
+                                  class="tag" 
+                                  :class="{ active: tag.selected }">
+                                {{ tag.name }}
+                            </span>
+                        </div>
+                    </div>
+                     <div class="audience-modal-section">
+                        <h3>人群属性筛选</h3>
+                        <p style="color: #888;">(此处为选择框和输入框的交互)</p>
+                    </div>
+                     <div class="audience-modal-section">
+                        <h3>人群范围</h3>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" v-model="audienceRange" value="all" name="audienceRange">
+                                全部人群
+                            </label>
+                            <label>
+                                <input type="radio" v-model="audienceRange" value="region" name="audienceRange">
+                                指定区域
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button @click="showAudienceModal = false" class="btn">取消</button>
+                    <button @click="createAudience" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ======================= 模态框: 选择内容 ======================= -->
+        <div v-show="showMaterialModal" class="modal-overlay" :class="{ active: showMaterialModal }" @click="closeModalOnOverlay">
+             <div class="modal-content modal-content-lg" @click.stop>
+                <div class="modal-header flex-between" style="width: 100%;">
+                    <h2>选择内容</h2>
+                    <button @click="showMaterialModal = false" class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="material-grid">
+                        <div v-for="material in currentPageMaterials" :key="material.id" 
+                             @click="toggleMaterial(material)" 
+                             class="material-card" 
+                             :class="{ selected: isMaterialSelected(material.id) }">
+                            <div class="material-cover-placeholder"></div>
+                            <h5>{{ material.name }}</h5>
+                            <p>{{ material.publishTime }}</p>
+                        </div>
+                    </div>
+                    <div class="pagination">
+                        <span @click="changePage(currentMaterialPage - 1)" 
+                              class="page-item" 
+                              :class="{ disabled: currentMaterialPage === 1 }">上一页</span>
+                        <span v-for="page in totalMaterialPages" :key="page" 
+                              @click="changePage(page)" 
+                              class="page-item" 
+                              :class="{ active: currentMaterialPage === page }">{{ page }}</span>
+                        <span @click="changePage(currentMaterialPage + 1)" 
+                              class="page-item" 
+                              :class="{ disabled: currentMaterialPage === totalMaterialPages }">下一页</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button @click="showMaterialModal = false" class="btn">取消</button>
+                    <button @click="confirmSelectMaterial" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ======================= 模态框: 流程配置 ======================= -->
+        <div v-show="showConfigModal" class="modal-overlay" :class="{ active: showConfigModal }" @click="closeModalOnOverlay">
+            <div class="modal-content modal-content-sm" @click.stop>
+                <div class="modal-header flex-between" style="width: 100%;">
+                    <h2>{{ configModalTitle }}</h2>
+                    <button @click="showConfigModal = false" class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body" v-html="configModalContent"></div>
+                <div class="modal-footer">
+                    <button @click="showConfigModal = false" class="btn">取消</button>
+                    <button @click="saveConfig" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ======================= 模态框: 任务设置 ======================= -->
+        <div v-show="showTaskSettingsModal" class="modal-overlay" :class="{ active: showTaskSettingsModal }" @click="closeModalOnOverlay">
+            <div class="modal-content" @click.stop>
+                <div class="modal-header flex-between" style="width: 100%;">
+                    <h2>任务设置</h2>
+                    <button @click="showTaskSettingsModal = false" class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="task-settings-form">
+                        <div class="form-group">
+                            <label>任务名称</label>
+                            <input type="text" placeholder="请输入任务名称" v-model="taskSettings.taskName" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>任务描述</label>
+                            <textarea placeholder="请输入任务描述" v-model="taskSettings.taskDescription" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>负责人</label>
+                            <input type="text" placeholder="请输入负责人" v-model="taskSettings.assignee" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>优先级</label>
+                            <select v-model="taskSettings.priority" class="form-select">
+                                <option value="low">低</option>
+                                <option value="medium">中</option>
+                                <option value="high">高</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>截止日期</label>
+                            <input type="date" v-model="taskSettings.dueDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>提醒时间（小时前）</label>
+                            <input type="number" min="1" max="168" v-model="taskSettings.reminderTime" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button @click="showTaskSettingsModal = false" class="btn">取消</button>
+                    <button @click="saveTaskSettings" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vue.js CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    // 页面状态
+                    currentPage: 'list', // 'list' | 'detail'
+                    activeTab: 'basic-info', // 'basic-info' | 'planning' | 'audience'
+                    
+                    // 新增字段的数据
+                    targetDecisionOptions: [
+                        '新产品/新适应症上市',
+                        '市场渗透/份额增长',
+                        '成熟期防御/忠诚度建立',
+                        '指南更新推广',
+                        '疾病领域教育',
+                        '竞品区隔',
+                        '安全性信息沟通',
+                        '核心专家互动'
+                    ],
+                    targetMetricOptions: [],
+                    targetMetricsMapping: {
+                        '新产品/新适应症上市': [
+                            '目标客户对新适应症的知晓率，在活动后从 [A]% 提升至 [B]%',
+                            '核心目标医院的覆盖率达到 [X]%',
+                            '目标客户对产品核心优势的认知率达到 [X]%',
+                            '上市后 [X] 个月内, 目标客户的试用率达到 [Y]%'
+                        ],
+                        '市场渗透/份额增长': [
+                            '目标人群中认可产品为一线治疗方案的医生比例提升 [X]%',
+                            '产品的市场份额 (新处方量/总处方量) 提升 [X]%',
+                            '目标客户的平均参会频次达到 [X] 次/人',
+                            '目标客户的月均处方量增长 [X]%'
+                        ],
+                        '成熟期防御/忠诚度建立': [
+                            '目标人群对我方产品的满意度/推荐意愿分数 (NPS) 维持在 [X] 分以上',
+                            '核心目标客户的流失率控制在 [X]% 以内',
+                            '持续处方我方产品的医生比例维持在 [X]%',
+                            '品牌忠诚度调研中，将我方产品列为首选的医生比例达到 [X]%'
+                        ],
+                        '指南更新推广': [
+                            '目标人群对新版指南的知晓率达到 [X]%',
+                            '认可并采纳新版指南进行临床实践的医生比例提升 [X]%',
+                            '相关指南解读内容的互动率（如点击、阅读）达到 [X]%',
+                            '会后调研中，能准确复述指南核心更新点的医生比例达到 [X]%'
+                        ],
+                        '疾病领域教育': [
+                            '参与活动的医生，在会后测试中对疾病诊断标准的掌握准确率提升 [X]%',
+                            '触达的医生中，相关疾病的误诊率降低 [X]%',
+                            '对所倡导的疾病管理新理念的认可度达到 [X]%',
+                            '目标人群对疾病早期筛查重要性的认知率提升 [X]%'
+                        ],
+                        '竞品区隔': [
+                            '目标医生对我品在“[关键属性]”上评价为“优于竞品”的比例从 [A]% 提升至 [B]%',
+                            '问卷调研中，能准确说出我品与竞品核心差异的医生比例达到 [X]%',
+                            '面对竞品时，我方产品的处方保持率达到 [X]%',
+                            '提及竞品时，主动询问我方产品差异点的医生比例达到 [X]%'
+                        ],
+                        '安全性信息沟通': [
+                            '目标人群对产品安全性的信心度分数提升 [X]%',
+                            '对安全性常见误解的澄清率达到 [X]%',
+                            '相关安全性沟通材料的阅读率或互动率达到 [X]%',
+                            '因安全性顾虑而未使用我方产品的医生比例降低 [X]%'
+                        ],
+                        '核心专家互动': [
+                            '本年度核心专家 (KOL) 的有效互动次数达到 [X] 次',
+                            '核心专家的合作意愿度（如担任讲者、顾问）达到 [X]%',
+                            '从核心专家处获得的有效市场洞察数量达到 [X] 条',
+                            '核心专家在公开场合（如大会发言、文章）正面引用我方产品/数据的次数达到 [X] 次'
+                        ]
+                    },
+
+                    // 模态框状态
+                    showCreateModal: false,
+                    showAudienceModal: false,
+                    showMaterialModal: false,
+                    showConfigModal: false,
+                    showTaskSettingsModal: false, // 新增，用于控制任务设置弹窗
+                    showAnalysisTab: false, // 控制追踪和分析标签页的显示
+                    
+                    // 活动数据
+                    campaigns: [
+                        {
+                            id: 156,
+                            name: '内容营销测试001',
+                            type: '内容营销',
+                            status: '执行中',
+                            startTime: '2025-06-13 15:32',
+                            products: 'group0110,group...',
+                            description: '这是一个内容营销活动的测试'
+                        },
+                        {
+                            id: 154,
+                            name: '3333',
+                            type: '内容营销',
+                            status: '执行中',
+                            startTime: '2025-08-12 17:42',
+                            products: 'Delta_AD',
+                            description: ''
+                        }
+                    ],
+                    
+                    // 新建活动表单
+                    newCampaign: {
+                        type: '会议营销',
+                        name: '',
+                        description: '',
+                        products: ''
+                    },
+                    
+                    // 当前查看的活动
+                    currentCampaign: {},
+                    
+                    // 标签页配置
+                    tabs: [
+                        { key: 'basic-info', name: '基本信息' },
+                        { key: 'planning', name: '活动规划' },
+                        { key: 'audience', name: '目标人群' }
+                    ],
+                    
+                    // 规划步骤
+                    planningSteps: [
+                        { key: 'audience', name: '目标人群', completed: false },
+                        { key: 'content', name: '内容', completed: false },
+                        { key: 'flow', name: '会议自动化流程', completed: false },
+                        { key: 'task', name: '任务设置', completed: false }
+                    ],
+                    
+                    // 目标人群相关
+                    audienceCreated: false,
+                    audienceStats: {
+                        total: 11,
+                        regions: 32
+                    },
+                    audienceTags: [
+                        { id: 1, name: 'TST001 - A', selected: true },
+                        { id: 2, name: 'TST001 - B', selected: false },
+                        { id: 3, name: '贝伐珠单抗 - A', selected: false },
+                        { id: 4, name: '拉帕替尼 - A', selected: false },
+                        { id: 5, name: '更多...', selected: false }
+                    ],
+                    audienceRange: 'all',
+                    audience: {
+                        doctors: [
+                            { id: 2462, name: '李大魁', code: 'AC00000000231', hospital: '中国医科大学院...', title: '', duty: '', specialty: '', gender: '男', department: '药剂科', removed: true },
+                            { id: 2463, name: '董怡', code: 'AC00000000232', hospital: '中国医科大学院...', title: '', duty: '', specialty: '', gender: '女', department: '放疗科', removed: true },
+                            { id: 2464, name: '魏丽', code: 'AC00000000234', hospital: '中国医科大学院...', title: '', duty: '', specialty: '', gender: '女', department: '心胸外科', removed: false },
+                            { id: 2465, name: '丁国芳', code: 'AC00000000238', hospital: '中国医科大学院...', title: '', duty: '', specialty: '', gender: '女', department: '儿科', removed: true },
+                            { id: 2466, name: '王丹华', code: 'AC00000000241', hospital: '中国人民解放军...', title: '', duty: '', specialty: '', gender: '女', department: '儿科', removed: false },
+                            { id: 2467, name: '王会珍', code: 'AC00000000246', hospital: '中国医科大学院...', title: '', duty: '', specialty: '', gender: '女', department: '其他', removed: true },
+                            { id: 2468, name: '陈晨', code: 'AC00000000351', hospital: '首都医科大学附...', title: '', duty: '', specialty: '', gender: '男', department: '药剂科', removed: true },
+                            { id: 2469, name: '李玉珍', code: 'AC00000000384', hospital: '北京大学人民医院', title: '', duty: '', specialty: '', gender: '女', department: '药剂科', removed: false },
+                            { id: 2470, name: '李清', code: 'AC00000000393', hospital: '北京大学第一医院', title: '', duty: '', specialty: '', gender: '男', department: '药剂科', removed: false },
+                            { id: 2471, name: '王广发', code: 'AC00000000397', hospital: '北京大学第一医院', title: '', duty: '', specialty: '', gender: '男', department: '肝胆胰外科', removed: false },
+                            { id: 2472, name: '杜怀清', code: 'AC00000000425', hospital: '北京大学第一医院', title: '', duty: '', specialty: '', gender: '女', department: '烧伤整形', removed: false }
+                        ]
+                    },
+                    
+                    // 内容材料相关
+                    selectedMaterials: [],
+                    tempSelectedMaterials: [], // 临时选择的材料
+                    allMaterials: [],
+                    currentMaterialPage: 1,
+                    materialsPerPage: 9,
+                    
+                    // 流程相关
+                    flowSaved: false,
+                    selectedFlowItems: {},
+                    currentEditingCardId: null,
+                    configModalTitle: '',
+                    configModalContent: '',
+                    
+                    // 流程数据
+                    flowData: {
+                        pre: {
+                            title: '会前',
+                            items: [
+                                {
+                                    id: 'invite',
+                                    name: '参会人邀约',
+                                    desc: '将邀请函群发给计划邀请的医生',
+                                    icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+                                    editable: true,
+                                    settings: {
+                                        target: '计划邀请的医生',
+                                        time: 0,
+                                        pushChannel: '企业微信'
+                                    }
+                                }
+                            ]
+                        },
+                        mid: {
+                            title: '会中',
+                            items: [
+                                {
+                                    id: 'reminder',
+                                    name: '会前提醒',
+                                    desc: '会议开始前进行会议提醒',
+                                    icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
+                                    editable: true,
+                                    settings: {
+                                        target: '接受邀请的参会人',
+                                        timeMode: 'before',
+                                        timeValue: 5
+                                    }
+                                }
+                            ]
+                        },
+                        post: {
+                            title: '会后',
+                            items: [
+                                {
+                                    id: 'material_post',
+                                    name: '材料推送',
+                                    desc: '将会议材料群发给参会人',
+                                    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+                                    editable: true,
+                                    settings: {
+                                        target: '有效参会人',
+                                        time: 60,
+                                        pushChannel: '企业微信'
+                                    }
+                                },
+                                {
+                                    id: 'survey_post',
+                                    name: '问卷推送',
+                                    desc: '将会议问卷群发给参会人',
+                                    icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01',
+                                    editable: true,
+                                    settings: {
+                                        target: '有效参会人',
+                                        time: 120,
+                                        pushChannel: '企业微信'
+                                    }
+                                },
+                                {
+                                    id: 'visit',
+                                    name: '拜访提醒',
+                                    desc: '对部分参会人为代表创建会后拜访任务',
+                                    icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21v-1a6 6 0 00-5.197-5.975M15 10a4 4 0 11-8 0 4 4 0 018 0z',
+                                    editable: true,
+                                    settings: {
+                                        target: '有效参会人',
+                                        time: 1440
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    
+                    // 任务设置相关
+                    taskSettingsCreated: false,
+                    showTaskSettingsModal: false,
+                    taskSettings: {
+                        taskName: '',
+                        taskDescription: '',
+                        assignee: '',
+                        priority: 'medium',
+                        dueDate: '',
+                        reminderTime: 24
+                    }
+                }
+            },
+            
+            computed: {
+                // 当前页面的材料
+                currentPageMaterials() {
+                    const start = (this.currentMaterialPage - 1) * this.materialsPerPage;
+                    const end = start + this.materialsPerPage;
+                    return this.allMaterials.slice(start, end);
+                },
+                
+                // 总页数
+                totalMaterialPages() {
+                    return Math.ceil(this.allMaterials.length / this.materialsPerPage);
+                }
+            },
+            
+            mounted() {
+                // 初始化材料数据
+                this.initializeMaterials();
+                // 默认切换到基本信息标签
+                this.switchTab('basic-info');
+            },
+            
+            methods: {
+                updateTargetMetricOptions() {
+                    const decision = this.currentCampaign.targetDecision;
+                    this.targetMetricOptions = this.targetMetricsMapping[decision] || [];
+                    this.currentCampaign.targetMetrics = []; // 重置已选中的指标
+                },
+                // 页面切换
+                goBackToList() {
+                    this.currentPage = 'list';
+                },
+                
+                viewCampaignDetail(campaign) {
+                    this.currentCampaign = { ...campaign };
+                    if (!this.currentCampaign.targetDecision) {
+                        this.currentCampaign.targetDecision = '';
+                    }
+                    if (!this.currentCampaign.targetMetrics) {
+                        this.currentCampaign.targetMetrics = [];
+                    }
+                    this.updateTargetMetricOptions();
+                    this.currentPage = 'detail';
+                    this.switchTab('basic-info'); // 默认显示基本信息
+                },
+                
+                // 标签切换
+                switchTab(tabKey) {
+                    this.activeTab = tabKey;
+                },
+                
+                // 发布活动
+                publishCampaign() {
+                    this.showAnalysisTab = true;
+                    this.currentCampaign.status = '已发布';
+                    alert('活动已发布！');
+                },
+                
+                // 模态框控制
+                closeModalOnOverlay(event) {
+                    if (event.target === event.currentTarget) {
+                        this.showCreateModal = false;
+                        this.showAudienceModal = false;
+                        this.showMaterialModal = false;
+                        this.showConfigModal = false;
+                        this.showTaskSettingsModal = false;
+                    }
+                },
+                
+                // 创建活动
+                createCampaign() {
+                    if (!this.newCampaign.name.trim()) {
+                        alert('活动名称不能为空！');
+                        return;
+                    }
+                    
+                    // 创建新活动
+                    const newId = Math.max(...this.campaigns.map(c => c.id)) + 1;
+                    const campaign = {
+                        id: newId,
+                        name: this.newCampaign.name,
+                        type: this.newCampaign.type,
+                        status: '草稿',
+                        startTime: new Date().toLocaleString('zh-CN'),
+                        products: this.newCampaign.products,
+                        description: this.newCampaign.description
+                    };
+                    
+                    this.campaigns.unshift(campaign);
+                    
+                    // 重置表单
+                    this.newCampaign = {
+                        type: '会议营销',
+                        name: '',
+                        description: '',
+                        products: ''
+                    };
+                    
+                    this.showCreateModal = false;
+                    alert('活动创建成功！');
+                },
+                
+                // 产品标签处理
+                getProductTags(products) {
+                    if (!products) return [];
+                    return products.split(',').map(p => p.trim()).filter(p => p);
+                },
+                
+                // 滚动到指定区域
+                scrollToSection(sectionKey) {
+                    const element = document.getElementById(`section-${sectionKey}`);
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                },
+                
+                // 目标人群相关方法
+                toggleTag(tagId) {
+                    const tag = this.audienceTags.find(t => t.id === tagId);
+                    if (tag) {
+                        tag.selected = !tag.selected;
+                    }
+                },
+                
+                createAudience() {
+                    this.audienceCreated = true;
+                    this.showAudienceModal = false;
+                    this.planningSteps[0].completed = true;
+                    alert('目标人群创建成功！');
+                },
+                
+                recreateAudience() {
+                    this.audienceCreated = false;
+                    this.planningSteps[0].completed = false;
+                    this.showAudienceModal = true;
+                },
+                
+                viewAudience() {
+                    // 切换到目标人群tab页
+                    this.switchTab('audience');
+                },
+                
+                // 初始化材料数据
+                initializeMaterials() {
+                    this.allMaterials = [];
+                    for (let i = 1; i <= 25; i++) {
+                        this.allMaterials.push({
+                            id: i,
+                            name: `内容材料 ${i}`,
+                            publishTime: `2024-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`
+                        });
+                    }
+                },
+                
+                // 材料选择相关方法
+                isMaterialSelected(materialId) {
+                    return this.tempSelectedMaterials.some(m => m.id === materialId);
+                },
+                
+                toggleMaterial(material) {
+                    const index = this.tempSelectedMaterials.findIndex(m => m.id === material.id);
+                    if (index > -1) {
+                        this.tempSelectedMaterials.splice(index, 1);
+                    } else {
+                        this.tempSelectedMaterials.push({ ...material });
+                    }
+                },
+                
+                confirmSelectMaterial() {
+                    this.selectedMaterials = [...this.tempSelectedMaterials];
+                    this.showMaterialModal = false;
+                    if (this.selectedMaterials.length > 0) {
+                        this.planningSteps[1].completed = true;
+                    }
+                },
+                
+                removeMaterial(materialId) {
+                    this.selectedMaterials = this.selectedMaterials.filter(m => m.id !== materialId);
+                    this.tempSelectedMaterials = this.tempSelectedMaterials.filter(m => m.id !== materialId);
+                    if (this.selectedMaterials.length === 0) {
+                        this.planningSteps[1].completed = false;
+                    }
+                },
+                
+                // 分页相关方法
+                changePage(page) {
+                    if (page >= 1 && page <= this.totalMaterialPages) {
+                        this.currentMaterialPage = page;
+                    }
+                },
+                
+                // 流程相关方法
+                isFlowCardSelected(cardId, phase) {
+                    return this.selectedFlowItems[phase] && this.selectedFlowItems[phase].includes(cardId);
+                },
+                
+                toggleFlowCard(cardId, phase) {
+                    if (!this.selectedFlowItems[phase]) {
+                        this.selectedFlowItems[phase] = [];
+                    }
+                    
+                    const index = this.selectedFlowItems[phase].indexOf(cardId);
+                    if (index > -1) {
+                        this.selectedFlowItems[phase].splice(index, 1);
+                    } else {
+                        this.selectedFlowItems[phase].push(cardId);
+                    }
+                },
+                
+                getSelectedFlowItems(phase) {
+                    if (!this.selectedFlowItems[phase]) return [];
+                    return this.flowData[phase].items.filter(item => 
+                        this.selectedFlowItems[phase].includes(item.id)
+                    );
+                },
+                
+                saveFlow() {
+                    this.flowSaved = true;
+                    this.planningSteps[2].completed = true;
+                },
+                
+                editFlow() {
+                    this.flowSaved = false;
+                },
+                
+                // 配置模态框相关方法
+                openConfigModal(cardId) {
+                    this.currentEditingCardId = cardId;
+                    
+                    // 查找对应的卡片
+                    let targetCard = null;
+                    for (const phase in this.flowData) {
+                        targetCard = this.flowData[phase].items.find(item => item.id === cardId);
+                        if (targetCard) break;
+                    }
+                    
+                    if (!targetCard) return;
+                    
+                    this.configModalTitle = `配置 - ${targetCard.name}`;
+                    this.configModalContent = this.generateConfigForm(targetCard);
+                    this.showConfigModal = true;
+                },
+                
+                generateConfigForm(card) {
+                    const settings = card.settings;
+                    let formHtml = '';
+                    
+                    if (card.id === 'reminder') {
+                        formHtml = `
+                            <div class="form-group">
+                                <label>推送对象</label>
+                                <select class="form-select" id="config-target">
+                                    <option value="接受邀请的参会人" ${settings.target === '接受邀请的参会人' ? 'selected' : ''}>接受邀请的参会人</option>
+                                    <option value="有效参会人" ${settings.target === '有效参会人' ? 'selected' : ''}>有效参会人</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>提醒时间</label>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <select class="form-select" id="config-time-mode" style="width: auto;">
+                                        <option value="before" ${settings.timeMode === 'before' ? 'selected' : ''}>会议开始前</option>
+                                        <option value="after" ${settings.timeMode === 'after' ? 'selected' : ''}>会议结束后</option>
+                                    </select>
+                                    <input type="number" class="form-control" id="config-time-value" value="${settings.timeValue}" style="width: 80px;">
+                                    <span>分钟</span>
+                                </div>
+                            </div>
+                        `;
+                    } else if (card.id === 'invite') {
+                        formHtml = `
+                            <div class="form-group">
+                                <label>推送时间</label>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <input type="number" class="form-control" id="config-time" value="${settings.time || 10}" style="width: 80px;">
+                                    <span>分钟前</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>推送渠道</label>
+                                <div>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="pushChannel" value="企业微信" ${settings.pushChannel === '企业微信' ? 'checked' : ''}> 企业微信
+                                    </label>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        formHtml = `
+                            <div class="form-group">
+                                <label>推送对象</label>
+                                <select class="form-select" id="config-target">
+                                    <option value="接受邀请的参会人" ${settings.target === '接受邀请的参会人' ? 'selected' : ''}>接受邀请的参会人</option>
+                                    <option value="有效参会人" ${settings.target === '有效参会人' ? 'selected' : ''}>有效参会人</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>推送时间</label>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <input type="number" class="form-control" id="config-time" value="${settings.time}" style="width: 80px;">
+                                    <span>分钟后</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>推送渠道</label>
+                                <div>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="pushChannel" value="企业微信" ${settings.pushChannel === '企业微信' ? 'checked' : ''}> 企业微信
+                                    </label>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    return formHtml;
+                },
+                
+                saveConfig() {
+                    // 查找对应的卡片并更新设置
+                    let targetCard = null;
+                    for (const phase in this.flowData) {
+                        targetCard = this.flowData[phase].items.find(item => item.id === this.currentEditingCardId);
+                        if (targetCard) break;
+                    }
+                    
+                    if (!targetCard) return;
+                    
+                    // 获取表单数据
+                    const target = document.getElementById('config-target')?.value;
+                    
+                    if (this.currentEditingCardId === 'reminder') {
+                        const timeMode = document.getElementById('config-time-mode')?.value;
+                        const timeValue = document.getElementById('config-time-value')?.value;
+                        targetCard.settings = {
+                            target: target,
+                            timeMode: timeMode,
+                            timeValue: parseInt(timeValue)
+                        };
+                    } else if (this.currentEditingCardId === 'invite') {
+                        const pushChannel = document.querySelector('input[name="pushChannel"]:checked')?.value;
+                        targetCard.settings = {
+                            target: target,
+                            time: 0,
+                            pushChannel: pushChannel
+                        };
+                    } else {
+                        const time = document.getElementById('config-time')?.value;
+                        const pushChannel = document.querySelector('input[name="pushChannel"]:checked')?.value;
+                        targetCard.settings = {
+                            target: target,
+                            time: parseInt(time),
+                            pushChannel: pushChannel
+                        };
+                    }
+                    
+                    this.showConfigModal = false;
+                    // alert('配置保存成功！');
+                },
+                
+                getSettingsString(cardId, settings) {
+                    if (cardId === 'reminder') {
+                        const timeText = settings.timeMode === 'before' ? '会议开始前' : '会议结束后';
+                        return `推送对象: ${settings.target}<br>提醒时间: ${timeText} ${settings.timeValue} 分钟`;
+                    } else if (cardId === 'invite') {
+                        let settingsString = ``;
+                        if (settings.pushChannel) {
+                            settingsString += `<br>推送渠道: ${settings.pushChannel}`;
+                        }
+                        return settingsString;
+                    } else {
+                        let settingsString = `推送对象: ${settings.target}<br>推送时间: ${settings.time} 分钟后`;
+                        if (settings.pushChannel) {
+                            settingsString += `<br>推送渠道: ${settings.pushChannel}`;
+                        }
+                        return settingsString;
+                    }
+                },
+                
+                // 任务设置相关方法
+                openTaskSettings() {
+                    this.showTaskSettingsModal = true;
+                },
+                
+                saveTaskSettings() {
+                    // 验证必填字段
+                    if (!this.taskSettings.taskName.trim()) {
+                        alert('任务名称不能为空！');
+                        return;
+                    }
+                    if (!this.taskSettings.assignee.trim()) {
+                        alert('负责人不能为空！');
+                        return;
+                    }
+                    
+                    // 标记任务设置已创建
+                    this.taskSettingsCreated = true;
+                    
+                    // 更新步骤完成状态
+                    const taskStep = this.planningSteps.find(step => step.key === 'task');
+                    if (taskStep) {
+                        taskStep.completed = true;
+                    }
+                    
+                    // 关闭弹窗
+                    this.showTaskSettingsModal = false;
+                    
+                    alert('任务设置保存成功！');
+                },
+                
+                editTaskSettings() {
+                    this.showTaskSettingsModal = true;
+                },
+                
+                viewTaskSettings() {
+                    alert(`任务名称: ${this.taskSettings.taskName}\n任务描述: ${this.taskSettings.taskDescription}\n负责人: ${this.taskSettings.assignee}\n优先级: ${this.taskSettings.priority}\n截止日期: ${this.taskSettings.dueDate}\n提醒时间: ${this.taskSettings.reminderTime}小时前`);
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

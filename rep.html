@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医药代表工作台</title>
+    <link rel="stylesheet" href="rep.css">
+</head>
+<body>
+    <div class="main-container">
+        <div id="app">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <div class="header-left">
+                <div class="avatar">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <span class="username">yongchun.xing</span>
+            </div>
+            <div class="header-right">
+                <button class="menu-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- 代表信息 -->
+        <div class="rep-info">
+            <span class="rep-label">代表1</span>
+        </div>
+
+        <!-- 公告栏 -->
+        <div class="announcement">
+            <div class="announcement-header">
+                <span class="announcement-icon">📢</span>
+                <span class="announcement-title">公告</span>
+                <span class="view-all">查看全部公告 ></span>
+            </div>
+            <div class="announcement-content">
+                系统更新：CRM系统将于本月15日凌晨2:00-5:00进行升级维护，期间系统暂停使用，请各位提前做好工作安排。
+            </div>
+        </div>
+
+        <!-- 学术会议任务 -->
+        <div class="meeting-task-section">
+            <h2 class="section-title">市场营销活动</h2>
+            <div class="task-card-container">
+                <div v-for="task in tasks" :key="task.campaign_name" class="task-card">
+                    <div class="task-card-header">
+                        <span class="task-type">会议营销</span>
+                        <span class="task-mission-type">{{ task.mission_type }}</span>
+                    </div>
+                    <div class="task-card-body">
+                        <h3 class="task-title">{{ task.mission_type === '创建会议' ? task.campaign_name : task.sample_meeting_name }}</h3>
+                        <p class="task-description">{{ task.campaign_description }}</p>
+                    </div>
+                    <div class="task-card-footer">
+                        <button class="complete-btn" @click="handleCompleteTask(task)">去完成</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主数据管理 -->
+        <div class="main-data-section">
+            <h2 class="section-title">主数据管理</h2>
+            <div class="data-grid">
+                <div class="data-item">
+                    <div class="data-icon blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">我的医院</span>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">我的医生</span>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon green">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">我的产品</span>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22S19,14.25 19,9A7,7 0 0,0 12,2Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">药店管理</span>
+                </div>
+            </div>
+            
+            <div class="data-grid">
+                <div class="data-item">
+                    <div class="data-icon green">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">新增患者数记录</span>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon green">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">医生(或医院)处方更新申请</span>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon green">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">自标医生维护</span>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22S19,14.25 19,9A7,7 0 0,0 12,2Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">经销商管理</span>
+                </div>
+            </div>
+
+            <div class="data-grid">
+                <div class="data-item">
+                    <div class="data-icon blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">经销商人员管理</span>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">我的医院产品</span>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">我的工厂</span>
+                </div>
+                <div class="data-item">
+                    <div class="data-icon orange">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z"/>
+                        </svg>
+                    </div>
+                    <span class="data-label">智能建议</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 活动管理 -->
+        <div class="activity-section">
+            <h2 class="section-title">活动管理</h2>
+            <div class="activity-grid">
+                <div class="activity-item">
+                    <div class="activity-icon blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,3H5C3.9,3 3,3.9 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.9 20.1,3 19,3M19,19H5V8H19V19M5,6V5H19V6H5Z"/>
+                        </svg>
+                    </div>
+                    <span class="activity-label">参会医生次数统计</span>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon green">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/>
+                        </svg>
+                    </div>
+                    <span class="activity-label">讲者中心</span>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19,3H5C3.9,3 3,3.9 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.9 20.1,3 19,3M19,19H5V8H19V19M5,6V5H19V6H5Z"/>
+                        </svg>
+                    </div>
+                    <span class="activity-label">我的活动</span>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-icon blue">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"/>
+                        </svg>
+                    </div>
+                    <span class="activity-label">销量分析</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部导航 -->
+        <nav class="bottom-nav">
+            <div class="nav-item active">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                </svg>
+                <span>首页</span>
+            </div>
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19,3H5C3.9,3 3,3.9 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.9 20.1,3 19,3M19,19H5V8H19V19M5,6V5H19V6H5Z"/>
+                </svg>
+                <span>日程</span>
+            </div>
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                </svg>
+                <span>工作</span>
+            </div>
+            <div class="nav-item">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M16,6L18.29,8.29L13.41,13.17L9.41,9.17L2,16.59L3.41,18L9.41,12L13.41,16L19.71,9.71L22,12V6H16Z"/>
+                </svg>
+                <span>看板</span>
+            </div>
+        </nav>
+
+        <!-- 悬浮按钮 -->
+        <div class="fab">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+            </svg>
+        </div>
+
+        <!-- 营销活动详情页 -->
+        <div v-if="showCampaignDetailPage" class="campaign-detail-page">
+            <div class="campaign-header">
+                <h2 class="campaign-title">{{ currentCampaign.campaign_name }}</h2>
+                <button @click="closeCampaignDetailPage" class="close-btn">×</button>
+            </div>
+            <div class="campaign-content">
+                <div class="campaign-tags">
+                    <span class="campaign-tag">会议营销</span>
+                    <span class="campaign-tag">产品：{{ currentCampaign.product }}</span>
+                </div>
+                <p class="campaign-description">{{ currentCampaign.campaign_description }}</p>
+                
+                <div class="progress-section">
+                    <h3 class="progress-title">营销任务执行进度</h3>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" :style="{ width: (currentCampaign.mission_type === '创建会议' ? '0%' : '50%') }"></div>
+                    </div>
+                </div>
+
+                <div class="materials-section">
+                    <h3 class="materials-title">推广的电子资料</h3>
+                    <div class="material-item" v-for="n in 5" :key="n">
+                        <div class="material-icon"></div>
+                        <div class="material-info">
+                            <span class="material-name">{{ currentCampaign.product }}产品介绍手册{{ n }}</span>
+                        </div>
+                        <button class="preview-btn">预览资料</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="campaign-actions">
+                <button class="action-btn inappropriate-btn" @click="openInappropriatePopup">不合适</button>
+                <button class="action-btn execute-btn" @click="executeCampaign">去执行</button>
+            </div>
+        </div>
+
+        <!-- “不合适”弹窗 -->
+        <div v-if="showInappropriatePopup" class="popup-overlay">
+            <div class="popup-container">
+                <div class="popup-header">
+                    <h3 class="popup-title">营销活动反馈</h3>
+                    <button @click="closeInappropriatePopup" class="popup-close-btn">×</button>
+                </div>
+                <div class="popup-body">
+                    <p class="question-title">1. 请选择 (多选)</p>
+                    <div class="options-container">
+                        <label v-for="reason in inappropriateReasons" :key="reason.id" class="option-label">
+                            <input type="checkbox" :value="reason.text" v-model="selectedReasons">
+                            {{ reason.text }}
+                        </label>
+                    </div>
+                </div>
+                <div class="popup-footer">
+                    <button @click="submitInappropriateReasons" class="popup-submit-btn">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="rep.js"></script>
+</body>
+</html>
