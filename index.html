@@ -409,6 +409,7 @@
 
             clickableArrows.forEach((arrow, index) => {
                 arrow.addEventListener('click', () => {
+                    openModal(``);
                     openModal(`./ppt-image/${index + 1}.png`);
                 });
             });
